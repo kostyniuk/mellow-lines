@@ -93,51 +93,7 @@ async function getHighlighterOnce() {
           "vitesse-light",
           "vesper",
         ],
-        langs: [
-          // Web fundamentals
-          "javascript",
-          "typescript",
-          "tsx",
-          "jsx",
-          "html",
-          "css",
-          "json",
-          "markdown",
-          // Shell
-          "bash",
-          "shell",
-          // Systems
-          "c",
-          "cpp",
-          "rust",
-          "go",
-          // JVM / .NET
-          "java",
-          "kotlin",
-          "scala",
-          "csharp",
-          // Scripting
-          "python",
-          "ruby",
-          "php",
-          "lua",
-          // Mobile
-          "swift",
-          "dart",
-          // Functional
-          "elixir",
-          // Frontend frameworks
-          "svelte",
-          "vue",
-          // Data / Config
-          "sql",
-          "yaml",
-          "toml",
-          "graphql",
-          // DevOps
-          "dockerfile",
-          "terraform",
-        ],
+        langs: [...AVAILABLE_LANGUAGES],
       });
     })();
   }

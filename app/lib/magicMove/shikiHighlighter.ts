@@ -1,4 +1,9 @@
-import type { BundledLanguage, Highlighter, SpecialLanguage, ThemedToken } from "shiki";
+import type {
+  BundledLanguage,
+  Highlighter,
+  SpecialLanguage,
+  ThemedToken,
+} from "shiki";
 
 export type ShikiThemeChoice =
   | "github-light"
@@ -7,7 +12,9 @@ export type ShikiThemeChoice =
   | "one-dark-pro"
   | "vitesse-dark"
   | "vitesse-light"
-  | "vesper";
+  | "vesper"
+  | "kanagawa-dragon"
+  | "kanagawa-lotus";
 
 export const AVAILABLE_THEMES: readonly ShikiThemeChoice[] = [
   "github-light",
@@ -17,6 +24,8 @@ export const AVAILABLE_THEMES: readonly ShikiThemeChoice[] = [
   "vitesse-dark",
   "vitesse-light",
   "vesper",
+  "kanagawa-dragon",
+  "kanagawa-lotus",
 ] as const;
 
 export const AVAILABLE_LANGUAGES = [
@@ -32,6 +41,7 @@ export const AVAILABLE_LANGUAGES = [
   "bash",
   "shell",
   "rust",
+  "zig",
 ] as const;
 
 /**
@@ -61,6 +71,8 @@ async function getHighlighterOnce() {
           "vitesse-dark",
           "vitesse-light",
           "vesper",
+          "kanagawa-dragon",
+          "kanagawa-lotus",
         ],
         langs: [
           "javascript",
@@ -75,6 +87,7 @@ async function getHighlighterOnce() {
           "bash",
           "shell",
           "rust",
+          "zig",
         ],
       });
     })();
@@ -89,6 +102,7 @@ function normalizeLang(lang: string): string {
   if (l === "sh") return "shell";
   if (l === "md") return "markdown";
   if (l === "rs") return "rust";
+  if (l === "zig") return "zig";
   return l || "text";
 }
 
@@ -103,11 +117,15 @@ export async function shikiTokenizeToLines(opts: {
   const lang = normalizeLang(opts.lang);
   const variant = getThemeVariant(opts.theme);
 
-  const langToken = lang === "text" ? ("text" as SpecialLanguage) : (lang as BundledLanguage);
+  const langToken =
+    lang === "text" ? ("text" as SpecialLanguage) : (lang as BundledLanguage);
 
   let themed: ReturnType<typeof highlighter.codeToTokens>;
   try {
-    themed = highlighter.codeToTokens(opts.code, { lang: langToken, theme: themeName });
+    themed = highlighter.codeToTokens(opts.code, {
+      lang: langToken,
+      theme: themeName,
+    });
   } catch {
     themed = highlighter.codeToTokens(opts.code, {
       lang: "text" as SpecialLanguage,

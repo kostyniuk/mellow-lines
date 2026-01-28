@@ -14,6 +14,9 @@ export type CanvasLayoutConfig = {
   startLine: number;
 };
 
+/** Padding on each side of the gutter (left and right of line numbers) */
+export const GUTTER_PADDING = 16;
+
 export type LaidToken = {
   key: string;
   content: string;
@@ -192,6 +195,7 @@ export function layoutTokenLinesToCanvas(opts: {
   bg: string;
   theme: RenderTheme;
   config: CanvasLayoutConfig;
+  gutterWidthOverride?: number; // Use this width instead of calculating from line count
 }): LayoutResult {
   const { ctx, tokenLines, config, theme } = opts;
 
@@ -199,14 +203,20 @@ export function layoutTokenLinesToCanvas(opts: {
   ctx.textBaseline = "top";
 
   const charW = measureCharWidth(ctx);
-
-  const lineCount = tokenLines.length;
-  const lastLineNumber = config.startLine + Math.max(0, lineCount - 1);
-  const digits = String(lastLineNumber).length;
-
   const gutterEnabled = config.showLineNumbers;
-  const gutterPadding = gutterEnabled ? 16 : 0;
-  const gutterWidth = gutterEnabled ? Math.ceil(digits * charW + gutterPadding * 2) : 0;
+
+  // Use override if provided, otherwise calculate from line count
+  let gutterWidth: number;
+  if (opts.gutterWidthOverride !== undefined) {
+    gutterWidth = opts.gutterWidthOverride;
+  } else if (gutterEnabled) {
+    const lineCount = tokenLines.length;
+    const lastLineNumber = config.startLine + Math.max(0, lineCount - 1);
+    const digits = String(lastLineNumber).length;
+    gutterWidth = Math.ceil(digits * charW + GUTTER_PADDING * 2);
+  } else {
+    gutterWidth = 0;
+  }
 
   const fg = theme === "dark" ? "#e5e7eb" : "#111827";
   const lineNoColor = theme === "dark" ? "#94a3b8" : "#6b7280";

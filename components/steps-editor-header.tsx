@@ -3,7 +3,11 @@
 import { Layers, Plus, Settings2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Combobox,
   ComboboxContent,
@@ -87,7 +91,10 @@ export function StepsEditorHeader({
           onValueChange={(v) => v && onLangChange(v as string)}
           itemToStringLabel={(value) => formatName(value as string)}
         >
-          <ComboboxInput placeholder="Select a language..." className="h-8 w-[140px] text-xs" />
+          <ComboboxInput
+            placeholder="Select a language..."
+            className="h-8 w-[140px] text-xs"
+          />
           <ComboboxContent>
             <ComboboxEmpty>No languages found</ComboboxEmpty>
             <ComboboxList>
@@ -106,7 +113,10 @@ export function StepsEditorHeader({
           onValueChange={(v) => v && onThemeChange(v as ShikiThemeChoice)}
           itemToStringLabel={(value) => formatName(value as string)}
         >
-          <ComboboxInput placeholder="Select theme..." className="h-8 w-[140px] text-xs" />
+          <ComboboxInput
+            placeholder="Select theme..."
+            className="h-8 w-fit text-xs"
+          />
           <ComboboxContent>
             <ComboboxEmpty>No themes found</ComboboxEmpty>
             <ComboboxList>
@@ -145,7 +155,12 @@ export function StepsEditorHeader({
           </PopoverContent>
         </Popover>
 
-        <Button onClick={onAddStep} size="sm" className="h-7 gap-1" variant="default">
+        <Button
+          onClick={onAddStep}
+          size="sm"
+          className="h-7 gap-1"
+          variant="default"
+        >
           <Plus className="w-3.5 h-3.5" /> New Step
         </Button>
       </div>

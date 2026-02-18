@@ -1,5 +1,38 @@
 import type { CanvasLayoutConfig, LayoutResult, RenderTheme } from "./codeLayout";
 
+function drawTitleBar(opts: {
+  ctx: CanvasRenderingContext2D;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  theme: RenderTheme;
+}) {
+  const { ctx, x, y, w, h, theme } = opts;
+  const dotColor = theme === "dark" ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.13)";
+  const dotRadius = Math.round(h * 0.14);
+  const dotGap = Math.round(dotRadius * 2.5);
+  const dotsY = y + h / 2;
+  const dotsX0 = x + Math.round(h * 0.55);
+
+  // Subtle separator line at the bottom of the title bar
+  const sepColor = theme === "dark" ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)";
+  ctx.strokeStyle = sepColor;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(x, y + h);
+  ctx.lineTo(x + w, y + h);
+  ctx.stroke();
+
+  // Draw three muted dots
+  for (let i = 0; i < 3; i++) {
+    ctx.beginPath();
+    ctx.arc(dotsX0 + i * dotGap, dotsY, dotRadius, 0, Math.PI * 2);
+    ctx.fillStyle = dotColor;
+    ctx.fill();
+  }
+}
+
 function roundedRectPath(
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -60,19 +93,43 @@ export function drawCodeFrame(opts: {
   const cardW = config.canvasWidth - 64;
   const cardH = config.canvasHeight - 64;
   const cardBg = opts.theme === "dark" ? "rgba(255,255,255,0.04)" : "rgba(17,24,39,0.03)";
-  const cardBorder = opts.theme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(17,24,39,0.10)";
+  const cardBorder = opts.theme === "dark" ? "rgba(255,255,255,0.06)" : "rgba(17,24,39,0.08)";
 
-  roundedRectPath(ctx, cardX, cardY, cardW, cardH, 18);
+  // Card shadow
+  ctx.save();
+  ctx.shadowColor = "rgba(0,0,0,0.25)";
+  ctx.shadowBlur = 32;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 8;
+  roundedRectPath(ctx, cardX, cardY, cardW, cardH, 20);
   ctx.fillStyle = cardBg;
   ctx.fill();
+  ctx.restore();
+
+  // Card border
+  roundedRectPath(ctx, cardX, cardY, cardW, cardH, 20);
   ctx.strokeStyle = cardBorder;
   ctx.lineWidth = 1;
   ctx.stroke();
 
   ctx.save();
   ctx.beginPath();
-  roundedRectPath(ctx, cardX, cardY, cardW, cardH, 18);
+  roundedRectPath(ctx, cardX, cardY, cardW, cardH, 20);
   ctx.clip();
+
+  // Title bar with macOS dots
+  const titleBarH = config.titleBarHeight;
+  if (titleBarH > 0) {
+    drawTitleBar({
+      ctx,
+      x: cardX,
+      y: cardY,
+      w: cardW,
+      h: titleBarH,
+      theme: opts.theme,
+    });
+    ctx.translate(0, titleBarH);
+  }
 
   // Gutter (line numbers)
   const gutterEnabled = opts.showLineNumbers ?? layout.gutter.enabled;

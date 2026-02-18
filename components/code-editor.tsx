@@ -80,8 +80,8 @@ export function CodeEditor({
     <div className="flex flex-col gap-1.5 w-full">
       <div
         className={cn(
-          "relative font-mono text-sm leading-relaxed rounded-md overflow-hidden border transition-colors focus-within:ring-2 focus-within:ring-primary/20",
-          isOverLimit ? "border-warning/50" : "",
+          "relative font-mono text-sm leading-relaxed rounded-b-xl overflow-hidden transition-colors focus-within:ring-1 focus-within:ring-white/10",
+          isOverLimit ? "ring-1 ring-warning/50" : "",
           className,
         )}
         style={{ maxHeight }}

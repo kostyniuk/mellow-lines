@@ -1,10 +1,10 @@
 "use client";
 
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { CodeEditor } from "./code-editor";
 import type { ShikiThemeChoice } from "@/app/lib/magicMove/shikiHighlighter";
+import { getThemeBgColor, getThemeVariant } from "@/app/lib/magicMove/shikiHighlighter";
 
 interface StepEditorItemProps {
   index: number;
@@ -25,35 +25,65 @@ export function StepEditorItem({
   language,
   theme,
 }: StepEditorItemProps) {
+  const bgColor = getThemeBgColor(theme);
+  const variant = getThemeVariant(theme);
+  const dotColor = variant === "dark" ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)";
+
   return (
-    <div className="group relative">
-      {/* Step Header */}
-      <div className="flex items-center justify-between mb-2">
-        <Label className="text-xs font-mono text-muted-foreground">Step {index + 1}</Label>
-        {canRemove && (
+    <div className="group relative shadow-lg shadow-black/10 rounded-xl overflow-hidden ring-1 ring-white/[0.06]">
+      {/* Title bar */}
+      <div
+        className="flex items-center h-9 px-3.5 rounded-t-xl"
+        style={{ backgroundColor: bgColor }}
+      >
+        {/* macOS dots */}
+        <div className="flex items-center gap-[7px]">
+          <span
+            className="block w-[11px] h-[11px] rounded-full"
+            style={{ backgroundColor: dotColor }}
+          />
+          <span
+            className="block w-[11px] h-[11px] rounded-full"
+            style={{ backgroundColor: dotColor }}
+          />
+          <span
+            className="block w-[11px] h-[11px] rounded-full"
+            style={{ backgroundColor: dotColor }}
+          />
+        </div>
+
+        {/* Step label */}
+        <span
+          className="flex-1 text-center text-[11px] font-mono select-none"
+          style={{ color: variant === "dark" ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.3)" }}
+        >
+          Step {index + 1}
+        </span>
+
+        {/* Delete button */}
+        {canRemove ? (
           <Button
             variant="ghost"
             size="icon"
-            className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+            className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
             onClick={onRemove}
           >
-            <Trash2 className="w-3.5 h-3.5" />
+            <Trash2 className="w-3 h-3" />
           </Button>
+        ) : (
+          <div className="w-5" />
         )}
       </div>
 
       {/* Code Editor */}
-      <div className="relative">
-        <CodeEditor
-          language={language}
-          theme={theme}
-          value={code}
-          onChange={onCodeChange}
-          placeholder={`// Enter code for step ${index + 1}...`}
-          className="bg-background"
-          maxLines={30}
-        />
-      </div>
+      <CodeEditor
+        language={language}
+        theme={theme}
+        value={code}
+        onChange={onCodeChange}
+        placeholder={`// Enter code for step ${index + 1}...`}
+        maxLines={30}
+      />
     </div>
   );
 }

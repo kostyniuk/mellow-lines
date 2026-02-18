@@ -171,6 +171,7 @@ export default function Home() {
           lineCount: data.lines.length,
           lineHeight: previewCfg.lineHeight,
           paddingY: previewCfg.paddingY,
+          titleBarHeight: previewCfg.titleBarHeight,
           minHeight: 0, // No minimum for preview - shrink to fit
         });
 
@@ -462,6 +463,7 @@ export default function Home() {
         lineCount: data.lines.length,
         lineHeight: exportCfg.lineHeight,
         paddingY: exportCfg.paddingY,
+        titleBarHeight: exportCfg.titleBarHeight,
         minHeight: 0,
       });
 

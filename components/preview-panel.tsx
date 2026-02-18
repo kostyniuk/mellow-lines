@@ -25,6 +25,8 @@ interface PreviewPanelProps {
   exportProgress: number;
   onExport: (format: "webm" | "mp4") => void;
   canExport: boolean;
+  filename: string;
+  onFilenameChange: (value: string) => void;
 }
 
 export function PreviewPanel({
@@ -47,6 +49,8 @@ export function PreviewPanel({
   exportProgress,
   onExport,
   canExport,
+  filename,
+  onFilenameChange,
 }: PreviewPanelProps) {
   return (
     <ResizablePanel
@@ -59,6 +63,8 @@ export function PreviewPanel({
         layoutError={layoutError}
         onDismissError={onDismissError}
         isLoading={!stepLayouts}
+        filename={filename}
+        onFilenameChange={onFilenameChange}
       />
 
       <PlayerControls
@@ -82,6 +88,7 @@ export function PreviewPanel({
         exportProgress={exportProgress}
         onExport={onExport}
         canExport={canExport}
+        filename={filename}
       />
     </ResizablePanel>
   );

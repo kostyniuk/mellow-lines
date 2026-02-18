@@ -53,6 +53,7 @@ export default function Home() {
   const [startHoldMs, setStartHoldMs] = useState<number>(500);
   const [betweenHoldMs, setBetweenHoldMs] = useState<number>(200);
   const [endHoldMs, setEndHoldMs] = useState<number>(500);
+  const [filename, setFilename] = useState<string>("Untitled-1");
 
   // Compute steps from simple mode
   const steps = useMemo<MagicMoveStep[]>(() => {
@@ -276,6 +277,7 @@ export default function Home() {
           showLineNumbers: only.showLineNumbers,
           startLine: only.startLine,
           lineCount: only.tokenLineCount,
+          // Title is shown via HTML input overlay in preview
         });
         return;
       }
@@ -291,6 +293,7 @@ export default function Home() {
           showLineNumbers: first.showLineNumbers,
           startLine: first.startLine,
           lineCount: first.tokenLineCount,
+          // Title is shown via HTML input overlay in preview
         });
         return;
       }
@@ -315,6 +318,7 @@ export default function Home() {
             prevLineCount: a.tokenLineCount,
             targetLineCount: b.tokenLineCount,
             transitionProgress: progress,
+            // Title is shown via HTML input overlay in preview
           });
           return;
         }
@@ -329,6 +333,7 @@ export default function Home() {
             showLineNumbers: b.showLineNumbers,
             startLine: b.startLine,
             lineCount: b.tokenLineCount,
+            // Title is shown via HTML input overlay in preview
           });
           return;
         }
@@ -344,6 +349,7 @@ export default function Home() {
         showLineNumbers: last.showLineNumbers,
         startLine: last.startLine,
         lineCount: last.tokenLineCount,
+        // Title is shown via HTML input overlay in preview
       });
     },
     [stepLayouts, theme, timeline, transitionMs, canvasDimensions],
@@ -532,6 +538,7 @@ export default function Home() {
           showLineNumbers: only.showLineNumbers,
           startLine: only.startLine,
           lineCount: only.tokenLineCount,
+          title: filename,
         });
         return;
       }
@@ -547,6 +554,7 @@ export default function Home() {
           showLineNumbers: first.showLineNumbers,
           startLine: first.startLine,
           lineCount: first.tokenLineCount,
+          title: filename,
         });
         return;
       }
@@ -571,6 +579,7 @@ export default function Home() {
             prevLineCount: a.tokenLineCount,
             targetLineCount: b.tokenLineCount,
             transitionProgress: progress,
+            title: filename,
           });
           return;
         }
@@ -585,6 +594,7 @@ export default function Home() {
             showLineNumbers: b.showLineNumbers,
             startLine: b.startLine,
             lineCount: b.tokenLineCount,
+            title: filename,
           });
           return;
         }
@@ -600,6 +610,7 @@ export default function Home() {
         showLineNumbers: last.showLineNumbers,
         startLine: last.startLine,
         lineCount: last.tokenLineCount,
+        title: filename,
       });
     };
 
@@ -710,6 +721,8 @@ export default function Home() {
           exportProgress={exportProgress}
           onExport={onExport}
           canExport={canExport}
+          filename={filename}
+          onFilenameChange={setFilename}
         />
       </ResizablePanelGroup>
     </div>

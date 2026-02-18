@@ -7,8 +7,9 @@ function drawTitleBar(opts: {
   w: number;
   h: number;
   theme: RenderTheme;
+  title?: string;
 }) {
-  const { ctx, x, y, w, h, theme } = opts;
+  const { ctx, x, y, w, h, theme, title } = opts;
   const dotColor = theme === "dark" ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.13)";
   const dotRadius = Math.round(h * 0.18);
   const dotGap = Math.round(dotRadius * 2.6);
@@ -30,6 +31,17 @@ function drawTitleBar(opts: {
     ctx.arc(dotsX0 + i * dotGap, dotsY, dotRadius, 0, Math.PI * 2);
     ctx.fillStyle = dotColor;
     ctx.fill();
+  }
+
+  // Draw title centered in title bar
+  if (title) {
+    const titleColor = theme === "dark" ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)";
+    ctx.fillStyle = titleColor;
+    ctx.font = `${Math.round(h * 0.35)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "center";
+    ctx.fillText(title, x + w / 2, y + h / 2);
+    ctx.textAlign = "left"; // Reset to default
   }
 }
 
@@ -82,6 +94,8 @@ export function drawCodeFrame(opts: {
   prevLineCount?: number;
   targetLineCount?: number;
   transitionProgress?: number;
+  // Optional title for the title bar
+  title?: string;
 }) {
   const { ctx, config, layout } = opts;
 
@@ -102,6 +116,7 @@ export function drawCodeFrame(opts: {
       w: config.canvasWidth,
       h: titleBarH,
       theme: opts.theme,
+      title: opts.title,
     });
     ctx.translate(0, titleBarH);
   }

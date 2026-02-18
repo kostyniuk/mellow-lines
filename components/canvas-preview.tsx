@@ -9,6 +9,8 @@ interface CanvasPreviewProps {
   layoutError: string | null;
   onDismissError: () => void;
   isLoading?: boolean;
+  filename: string;
+  onFilenameChange: (value: string) => void;
 }
 
 export function CanvasPreview({
@@ -16,6 +18,8 @@ export function CanvasPreview({
   layoutError,
   onDismissError,
   isLoading,
+  filename,
+  onFilenameChange,
 }: CanvasPreviewProps) {
   const hasShownRef = useRef(false);
   const shouldAnimate = !isLoading && !hasShownRef.current;
@@ -46,6 +50,16 @@ export function CanvasPreview({
             className={`relative shadow-2xl rounded-lg overflow-hidden ring-1 ring-black/5 dark:ring-white/10 bg-zinc-950 ${shouldAnimate ? "opacity-0 animate-[fadeIn_0.3s_ease-in-out_forwards]" : "opacity-100"}`}
           >
             <canvas ref={canvasRef} className="block" />
+            {/* Filename input overlay - displays title in preview */}
+            <div className="absolute top-0 left-0 right-0 h-8 flex items-center justify-center">
+              <input
+                type="text"
+                value={filename}
+                onChange={(e) => onFilenameChange(e.target.value)}
+                className="bg-transparent text-center text-xs text-white/40 placeholder:text-white/25 border-none outline-none focus:ring-0 focus:outline-none w-48 px-2 py-1 cursor-text"
+                placeholder="Untitled-1"
+              />
+            </div>
           </div>
         )}
       </div>

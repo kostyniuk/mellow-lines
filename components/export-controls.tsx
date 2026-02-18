@@ -19,6 +19,7 @@ interface ExportControlsProps {
   exportProgress: number;
   onExport: (format: "webm" | "mp4") => void;
   canExport: boolean;
+  filename: string;
 }
 
 export function ExportControls({
@@ -32,6 +33,7 @@ export function ExportControls({
   exportProgress,
   onExport,
   canExport,
+  filename,
 }: ExportControlsProps) {
   const [format, setFormat] = useState<"webm" | "mp4">("webm");
 
@@ -75,7 +77,7 @@ export function ExportControls({
 
         {downloadUrl && (
           <Button variant="outline" size="sm" asChild className="gap-2">
-            <a href={downloadUrl} download={`mellow-lines.${format}`}>
+            <a href={downloadUrl} download={`${filename || "Untitled-1"}.${format}`}>
               <Film className="w-4 h-4" />
               Save Video
             </a>

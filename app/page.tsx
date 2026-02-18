@@ -72,7 +72,7 @@ export default function Page() {
           </div>
 
           {/* Hero Video Demo - Center Bottom */}
-          <div className="w-full max-w-5xl mx-auto mt-12 sm:mt-16 lg:mt-20 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 fill-mode-backwards">
+          <div className="w-full max-w-3xl mx-auto mt-12 sm:mt-16 lg:mt-20 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 fill-mode-backwards">
             <div className="relative rounded-xl overflow-hidden shadow-2xl">
               {/* Shiny border effect */}
               <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/40 via-primary/60 to-primary/40 p-[1px]">
@@ -82,7 +82,7 @@ export default function Page() {
               {/* Video container */}
               <div className="relative rounded-xl overflow-hidden bg-muted/20">
                 <video
-                  src="/demo_slow.mp4"
+                  src="/demo.mp4"
                   autoPlay
                   muted
                   loop

@@ -103,7 +103,7 @@ export function StepsEditor({
       />
 
       <ScrollArea ref={scrollRef} className="flex-1 w-full min-h-0">
-        <div className="py-2 px-4 space-y-2 max-w-4xl mx-auto w-full pb-4">
+        <div className="py-2 px-4 space-y-4 max-w-4xl mx-auto w-full pb-4">
           {steps.map((step, index) => (
             <Fragment key={step.id}>
               <StepInsertDivider onInsert={() => onInsertStep(index)} />

@@ -12,10 +12,11 @@ export type CanvasLayoutConfig = {
   fontFamily: string;
   showLineNumbers: boolean;
   startLine: number;
+  titleBarHeight: number;
 };
 
 /** Padding on each side of the gutter (left and right of line numbers) */
-export const GUTTER_PADDING = 16;
+export const GUTTER_PADDING = 4;
 
 export type LaidToken = {
   key: string;
@@ -53,6 +54,7 @@ export function makeDefaultLayoutConfig(): CanvasLayoutConfig {
       'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
     showLineNumbers: false,
     startLine: 1,
+    titleBarHeight: 48,
   };
 }
 
@@ -68,6 +70,7 @@ export function makePreviewLayoutConfig(): CanvasLayoutConfig {
       'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
     showLineNumbers: false,
     startLine: 1,
+    titleBarHeight: 32,
   };
 }
 
@@ -79,13 +82,14 @@ export function calculateCanvasHeight(opts: {
   lineCount: number;
   lineHeight: number;
   paddingY: number;
+  titleBarHeight?: number;
   minHeight?: number;
 }): number {
-  const { lineCount, lineHeight, paddingY, minHeight = 0 } = opts;
+  const { lineCount, lineHeight, paddingY, titleBarHeight = 0, minHeight = 0 } = opts;
   const contentHeight = lineCount * lineHeight;
   // Add extra padding at bottom for visual balance
   const bottomBuffer = Math.ceil(lineHeight / 2);
-  const totalHeight = contentHeight + paddingY * 2 + bottomBuffer;
+  const totalHeight = contentHeight + paddingY * 2 + titleBarHeight + bottomBuffer;
   return Math.ceil(Math.max(minHeight, totalHeight));
 }
 

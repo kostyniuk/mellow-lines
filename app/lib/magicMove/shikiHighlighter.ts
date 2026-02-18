@@ -82,6 +82,26 @@ export function getThemeVariant(theme: ShikiThemeChoice): "light" | "dark" {
   return lightThemes.includes(theme) ? "light" : "dark";
 }
 
+const THEME_BG_COLORS: Record<ShikiThemeChoice, string> = {
+  "github-light": "#ffffff",
+  "github-dark": "#24292e",
+  "nord": "#2e3440",
+  "one-dark-pro": "#282c34",
+  "vitesse-dark": "#121212",
+  "vitesse-light": "#ffffff",
+  "vesper": "#101010",
+  "kanagawa-dragon": "#181616",
+  "kanagawa-lotus": "#f2ecbc",
+};
+
+/**
+ * Synchronous lookup for a theme's background color.
+ * Avoids async tokenization when only the bg color is needed (e.g. for editor styling).
+ */
+export function getThemeBgColor(theme: ShikiThemeChoice): string {
+  return THEME_BG_COLORS[theme];
+}
+
 export type TokenLine = {
   tokens: { content: string; color: string }[];
 };

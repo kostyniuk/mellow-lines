@@ -1,5 +1,38 @@
 import type { CanvasLayoutConfig, LayoutResult, RenderTheme } from "./codeLayout";
 
+function drawTitleBar(opts: {
+  ctx: CanvasRenderingContext2D;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  theme: RenderTheme;
+}) {
+  const { ctx, x, y, w, h, theme } = opts;
+  const dotColor = theme === "dark" ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.13)";
+  const dotRadius = Math.round(h * 0.18);
+  const dotGap = Math.round(dotRadius * 2.6);
+  const dotsY = y + h / 2;
+  const dotsX0 = x + Math.round(h * 0.6);
+
+  // Subtle separator line at the bottom of the title bar
+  const sepColor = theme === "dark" ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)";
+  ctx.strokeStyle = sepColor;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(x, y + h);
+  ctx.lineTo(x + w, y + h);
+  ctx.stroke();
+
+  // Draw three muted dots
+  for (let i = 0; i < 3; i++) {
+    ctx.beginPath();
+    ctx.arc(dotsX0 + i * dotGap, dotsY, dotRadius, 0, Math.PI * 2);
+    ctx.fillStyle = dotColor;
+    ctx.fill();
+  }
+}
+
 function roundedRectPath(
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -54,25 +87,24 @@ export function drawCodeFrame(opts: {
 
   clearAndPaintBackground({ ctx, config, bg: layout.bg });
 
-  // Card background - use config dimensions (logical size), not canvas dimensions (may be 2x for retina)
-  const cardX = 32;
-  const cardY = 32;
-  const cardW = config.canvasWidth - 64;
-  const cardH = config.canvasHeight - 64;
-  const cardBg = opts.theme === "dark" ? "rgba(255,255,255,0.04)" : "rgba(17,24,39,0.03)";
-  const cardBorder = opts.theme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(17,24,39,0.10)";
-
-  roundedRectPath(ctx, cardX, cardY, cardW, cardH, 18);
-  ctx.fillStyle = cardBg;
-  ctx.fill();
-  ctx.strokeStyle = cardBorder;
-  ctx.lineWidth = 1;
-  ctx.stroke();
-
+  // Clip to rounded canvas bounds (no inner card)
   ctx.save();
-  ctx.beginPath();
-  roundedRectPath(ctx, cardX, cardY, cardW, cardH, 18);
+  roundedRectPath(ctx, 0, 0, config.canvasWidth, config.canvasHeight, 16);
   ctx.clip();
+
+  // Title bar with macOS dots
+  const titleBarH = config.titleBarHeight;
+  if (titleBarH > 0) {
+    drawTitleBar({
+      ctx,
+      x: 0,
+      y: 0,
+      w: config.canvasWidth,
+      h: titleBarH,
+      theme: opts.theme,
+    });
+    ctx.translate(0, titleBarH);
+  }
 
   // Gutter (line numbers)
   const gutterEnabled = opts.showLineNumbers ?? layout.gutter.enabled;
@@ -81,20 +113,10 @@ export function drawCodeFrame(opts: {
   if (gutterEnabled && gutterWidth > 0) {
     const x0 = config.paddingX;
     const y0 = config.paddingY;
-    const h = cardH - (config.paddingY - (cardY + 0));
-
-    ctx.fillStyle = opts.theme === "dark" ? "rgba(0,0,0,0.16)" : "rgba(255,255,255,0.40)";
-    ctx.fillRect(x0, y0 - 8, gutterWidth + 12, h);
-
-    ctx.strokeStyle = layout.gutter.dividerColor;
-    ctx.beginPath();
-    ctx.moveTo(x0 + gutterWidth + 8, y0 - 8);
-    ctx.lineTo(x0 + gutterWidth + 8, y0 - 8 + h);
-    ctx.stroke();
-
     const startLine = opts.startLine ?? config.startLine;
     const lineCount =
-      opts.lineCount ?? Math.round((cardH - config.paddingY * 2) / config.lineHeight);
+      opts.lineCount ?? Math.round((config.canvasHeight - config.paddingY * 2) / config.lineHeight);
+
     ctx.font = `${config.fontSize}px ${config.fontFamily}`;
     ctx.textBaseline = "top";
     ctx.fillStyle = layout.gutter.textColor;

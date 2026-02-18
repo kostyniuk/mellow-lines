@@ -28,7 +28,7 @@ export function PlayerControls({
   // Throttle (not debounce) because we want regular updates during playback.
   // Debounce would wait for the value to stop changing, which never happens during playback.
   const [throttledPlayheadMs] = useThrottledValue(playheadMs, {
-    wait: 100,
+    wait: 20,
   });
 
   return (

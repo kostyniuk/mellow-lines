@@ -16,7 +16,7 @@ export type CanvasLayoutConfig = {
 };
 
 /** Padding on each side of the gutter (left and right of line numbers) */
-export const GUTTER_PADDING = 16;
+export const GUTTER_PADDING = 8;
 
 export type LaidToken = {
   key: string;

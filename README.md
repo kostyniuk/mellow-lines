@@ -2,7 +2,7 @@
 
 Code animation studio built with Next.js that transforms your code snippets into beautiful, smooth transition animations. Perfect for creating high-quality videos of code refactorings, feature implementations, or explaining complex logic.
 
-https://github.com/user-attachments/assets/36939811-7602-440f-b69b-8c966bc3afa8
+https://github.com/user-attachments/assets/de4e6ed5-9cca-45ae-a408-59ed955c6f21
 
 ## ✨ Features
 

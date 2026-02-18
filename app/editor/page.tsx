@@ -49,7 +49,7 @@ export default function Home() {
 
   const [theme, setTheme] = useState<ShikiThemeChoice>("vitesse-dark");
   const [fps, setFps] = useState<number>(60);
-  const [transitionMs, setTransitionMs] = useState<number>(1200);
+  const [transitionMs, setTransitionMs] = useState<number>(700);
   const [startHoldMs, setStartHoldMs] = useState<number>(500);
   const [betweenHoldMs, setBetweenHoldMs] = useState<number>(200);
   const [endHoldMs, setEndHoldMs] = useState<number>(500);

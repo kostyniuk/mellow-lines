@@ -46,8 +46,8 @@ export function makeDefaultLayoutConfig(): CanvasLayoutConfig {
   return {
     canvasWidth: 1920,
     canvasHeight: 1080,
-    paddingX: 64,
-    paddingY: 64,
+    paddingX: 40,
+    paddingY: 40,
     lineHeight: 40,
     fontSize: 26,
     fontFamily:
@@ -62,8 +62,8 @@ export function makePreviewLayoutConfig(): CanvasLayoutConfig {
   return {
     canvasWidth: 800,
     canvasHeight: 600,
-    paddingX: 40,
-    paddingY: 40,
+    paddingX: 24,
+    paddingY: 24,
     lineHeight: 24,
     fontSize: 16,
     fontFamily:

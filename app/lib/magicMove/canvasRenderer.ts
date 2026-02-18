@@ -113,18 +113,10 @@ export function drawCodeFrame(opts: {
   if (gutterEnabled && gutterWidth > 0) {
     const x0 = config.paddingX;
     const y0 = config.paddingY;
-    const h = config.canvasHeight;
-
-    // Divider line only — no background fill (transparent gutter like ray.so)
-    ctx.strokeStyle = layout.gutter.dividerColor;
-    ctx.beginPath();
-    ctx.moveTo(x0 + gutterWidth + 8, y0 - 8);
-    ctx.lineTo(x0 + gutterWidth + 8, y0 - 8 + h);
-    ctx.stroke();
-
     const startLine = opts.startLine ?? config.startLine;
     const lineCount =
       opts.lineCount ?? Math.round((config.canvasHeight - config.paddingY * 2) / config.lineHeight);
+
     ctx.font = `${config.fontSize}px ${config.fontFamily}`;
     ctx.textBaseline = "top";
     ctx.fillStyle = layout.gutter.textColor;

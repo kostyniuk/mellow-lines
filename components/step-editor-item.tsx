@@ -37,17 +37,17 @@ export function StepEditorItem({
         style={{ backgroundColor: bgColor }}
       >
         {/* macOS dots */}
-        <div className="flex items-center gap-[7px]">
+        <div className="flex items-center gap-1">
           <span
-            className="block w-[11px] h-[11px] rounded-full"
+            className="block w-3 h-3 rounded-full"
             style={{ backgroundColor: dotColor }}
           />
           <span
-            className="block w-[11px] h-[11px] rounded-full"
+            className="block w-3 h-3 rounded-full"
             style={{ backgroundColor: dotColor }}
           />
           <span
-            className="block w-[11px] h-[11px] rounded-full"
+            className="block w-3 h-3 rounded-full"
             style={{ backgroundColor: dotColor }}
           />
         </div>

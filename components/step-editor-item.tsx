@@ -65,7 +65,7 @@ export function StepEditorItem({
           <Button
             variant="ghost"
             size="icon"
-            className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+            className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive! hover:bg-transparent!"
             onClick={onRemove}
           >
             <Trash2 className="w-3 h-3" />

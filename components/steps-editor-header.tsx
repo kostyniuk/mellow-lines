@@ -10,15 +10,19 @@ import {
 } from "@/components/ui/popover";
 import {
   Combobox,
+  ComboboxCollection,
   ComboboxContent,
   ComboboxEmpty,
+  ComboboxGroup,
   ComboboxInput,
   ComboboxItem,
+  ComboboxLabel,
   ComboboxList,
+  ComboboxSeparator,
 } from "@/components/ui/combobox";
 import {
   AVAILABLE_LANGUAGES,
-  AVAILABLE_THEMES,
+  getGroupedThemes,
   type ShikiThemeChoice,
 } from "@/app/lib/magicMove/shikiHighlighter";
 import { SettingsPopover } from "./settings-popover";
@@ -53,6 +57,8 @@ function formatName(name: string) {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 }
+
+const groupedThemes = getGroupedThemes();
 
 export function StepsEditorHeader({
   stepCount,
@@ -108,7 +114,7 @@ export function StepsEditorHeader({
         </Combobox>
 
         <Combobox
-          items={AVAILABLE_THEMES}
+          items={groupedThemes}
           value={theme}
           onValueChange={(v) => v && onThemeChange(v as ShikiThemeChoice)}
           itemToStringLabel={(value) => formatName(value as string)}
@@ -120,10 +126,18 @@ export function StepsEditorHeader({
           <ComboboxContent>
             <ComboboxEmpty>No themes found</ComboboxEmpty>
             <ComboboxList>
-              {(item) => (
-                <ComboboxItem key={item} value={item}>
-                  {formatName(item)}
-                </ComboboxItem>
+              {(group, index) => (
+                <ComboboxGroup key={group.label} items={group.items}>
+                  <ComboboxLabel>{group.label}</ComboboxLabel>
+                  <ComboboxCollection>
+                    {(item) => (
+                      <ComboboxItem key={item} value={item}>
+                        {formatName(item)}
+                      </ComboboxItem>
+                    )}
+                  </ComboboxCollection>
+                  {index < groupedThemes.length - 1 && <ComboboxSeparator />}
+                </ComboboxGroup>
               )}
             </ComboboxList>
           </ComboboxContent>

@@ -74,14 +74,12 @@ export function CodeEditor({
   };
 
   const lineCount = value.split("\n").length;
-  const isOverLimit = maxLines && lineCount >= maxLines;
 
   return (
     <div className="flex flex-col gap-1.5 w-full">
       <div
         className={cn(
-          "relative font-mono text-sm leading-relaxed rounded-b-xl overflow-hidden transition-colors focus-within:ring-1 focus-within:ring-white/10",
-          isOverLimit ? "ring-1 ring-warning/50" : "",
+          "relative font-mono text-sm leading-relaxed overflow-hidden transition-colors focus-within:ring-1 focus-within:ring-white/10",
           className,
         )}
         style={{ maxHeight }}
@@ -129,19 +127,9 @@ export function CodeEditor({
             height: maxHeight,
             maxHeight,
           }}
-          className="relative z-10 block w-full p-4 m-0 bg-transparent text-transparent resize-none outline-none border-none font-mono text-sm leading-relaxed whitespace-pre-wrap break-words placeholder:text-muted-foreground/50 focus:ring-0 overflow-auto"
+          className="relative z-10 block w-full p-4 m-0 bg-transparent text-transparent resize-none outline-none border-none rounded-none font-mono text-sm leading-relaxed whitespace-pre-wrap break-words placeholder:text-muted-foreground/50 focus:ring-0 overflow-auto"
         />
       </div>
-      {maxLines && (
-        <div
-          className={cn(
-            "text-[10px] font-mono self-end px-1 transition-colors",
-            isOverLimit ? "text-warning animate-pulse" : "text-muted-foreground/50",
-          )}
-        >
-          {lineCount}/{maxLines} lines
-        </div>
-      )}
     </div>
   );
 }

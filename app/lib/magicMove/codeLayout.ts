@@ -47,7 +47,7 @@ export function makeDefaultLayoutConfig(): CanvasLayoutConfig {
     canvasWidth: 1920,
     canvasHeight: 1080,
     paddingX: 40,
-    paddingY: 40,
+    paddingY: 28,
     lineHeight: 40,
     fontSize: 26,
     fontFamily:
@@ -63,7 +63,7 @@ export function makePreviewLayoutConfig(): CanvasLayoutConfig {
     canvasWidth: 800,
     canvasHeight: 600,
     paddingX: 24,
-    paddingY: 24,
+    paddingY: 16,
     lineHeight: 24,
     fontSize: 16,
     fontFamily:
@@ -87,9 +87,7 @@ export function calculateCanvasHeight(opts: {
 }): number {
   const { lineCount, lineHeight, paddingY, titleBarHeight = 0, minHeight = 0 } = opts;
   const contentHeight = lineCount * lineHeight;
-  // Add extra padding at bottom for visual balance
-  const bottomBuffer = Math.ceil(lineHeight / 2);
-  const totalHeight = contentHeight + paddingY * 2 + titleBarHeight + bottomBuffer;
+  const totalHeight = contentHeight + paddingY * 1.5 + titleBarHeight;
   return Math.ceil(Math.max(minHeight, totalHeight));
 }
 

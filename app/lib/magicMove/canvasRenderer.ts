@@ -12,7 +12,7 @@ function drawTitleBar(opts: {
   const { ctx, x, y, w, h, theme, title } = opts;
   const dotColor = theme === "dark" ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.13)";
   const dotRadius = Math.round(h * 0.18);
-  const dotGap = Math.round(dotRadius * 2.6);
+  const dotGap = Math.round(dotRadius * 3.4);
   const dotsY = y + h / 2;
   const dotsX0 = x + Math.round(h * 0.6);
 

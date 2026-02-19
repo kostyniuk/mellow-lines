@@ -14,7 +14,20 @@ export type ShikiThemeChoice =
   | "vitesse-light"
   | "vesper"
   | "kanagawa-dragon"
-  | "kanagawa-lotus";
+  | "kanagawa-lotus"
+  | "dracula"
+  | "catppuccin-mocha"
+  | "catppuccin-latte"
+  | "tokyo-night"
+  | "solarized-dark"
+  | "solarized-light"
+  | "rose-pine"
+  | "rose-pine-dawn"
+  | "monokai"
+  | "night-owl"
+  | "one-light"
+  | "synthwave-84"
+  | "ayu-dark";
 
 export const AVAILABLE_THEMES: readonly ShikiThemeChoice[] = [
   "github-light",
@@ -26,6 +39,19 @@ export const AVAILABLE_THEMES: readonly ShikiThemeChoice[] = [
   "vesper",
   "kanagawa-dragon",
   "kanagawa-lotus",
+  "dracula",
+  "catppuccin-mocha",
+  "catppuccin-latte",
+  "tokyo-night",
+  "solarized-dark",
+  "solarized-light",
+  "rose-pine",
+  "rose-pine-dawn",
+  "monokai",
+  "night-owl",
+  "one-light",
+  "synthwave-84",
+  "ayu-dark",
 ] as const;
 
 export const AVAILABLE_LANGUAGES = [
@@ -78,7 +104,14 @@ export const AVAILABLE_LANGUAGES = [
  * Determine if a Shiki theme is light or dark for rendering purposes.
  */
 export function getThemeVariant(theme: ShikiThemeChoice): "light" | "dark" {
-  const lightThemes: ShikiThemeChoice[] = ["github-light", "vitesse-light"];
+  const lightThemes: ShikiThemeChoice[] = [
+    "github-light",
+    "vitesse-light",
+    "catppuccin-latte",
+    "solarized-light",
+    "rose-pine-dawn",
+    "one-light",
+  ];
   return lightThemes.includes(theme) ? "light" : "dark";
 }
 
@@ -92,6 +125,19 @@ const THEME_BG_COLORS: Record<ShikiThemeChoice, string> = {
   "vesper": "#101010",
   "kanagawa-dragon": "#181616",
   "kanagawa-lotus": "#f2ecbc",
+  "dracula": "#282a36",
+  "catppuccin-mocha": "#1e1e2e",
+  "catppuccin-latte": "#eff1f5",
+  "tokyo-night": "#1a1b26",
+  "solarized-dark": "#002b36",
+  "solarized-light": "#fdf6e3",
+  "rose-pine": "#191724",
+  "rose-pine-dawn": "#faf4ed",
+  "monokai": "#272822",
+  "night-owl": "#011627",
+  "one-light": "#fafafa",
+  "synthwave-84": "#262335",
+  "ayu-dark": "#0b0e14",
 };
 
 /**
@@ -123,6 +169,19 @@ async function getHighlighterOnce() {
           "vesper",
           "kanagawa-dragon",
           "kanagawa-lotus",
+          "dracula",
+          "catppuccin-mocha",
+          "catppuccin-latte",
+          "tokyo-night",
+          "solarized-dark",
+          "solarized-light",
+          "rose-pine",
+          "rose-pine-dawn",
+          "monokai",
+          "night-owl",
+          "one-light",
+          "synthwave-84",
+          "ayu-dark",
         ],
         langs: [...AVAILABLE_LANGUAGES],
       });

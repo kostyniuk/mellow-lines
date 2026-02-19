@@ -94,7 +94,7 @@ export function StepEditorItem({
           maxLines={maxLines}
         />
       </div>
-      <span className="text-[10px] font-mono self-end px-1 text-muted-foreground/50">
+      <span className="text-[10px] font-mono self-end p-[6px] text-muted-foreground/80">
         {lineCount}/{maxLines} lines
       </span>
     </div>

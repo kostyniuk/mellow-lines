@@ -221,7 +221,7 @@ export function layoutTokenLinesToCanvas(opts: {
   }
 
   const fg = theme === "dark" ? "#e5e7eb" : "#111827";
-  const lineNoColor = theme === "dark" ? "#94a3b8" : "#6b7280";
+  const lineNoColor = theme === "dark" ? "rgba(148,163,184,0.5)" : "rgba(107,114,128,0.5)";
   const dividerColor = theme === "dark" ? "rgba(148,163,184,0.35)" : "rgba(107,114,128,0.35)";
 
   const tokens: LaidToken[] = [];

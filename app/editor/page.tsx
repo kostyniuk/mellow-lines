@@ -44,7 +44,7 @@ type CanvasDimensions = {
 export default function Home() {
   const [simpleSteps, setSimpleSteps] = useState<SimpleStep[]>(DEFAULT_STEPS);
   const [selectedLang, setSelectedLang] = useState<string>("typescript");
-  const [simpleShowLineNumbers, setSimpleShowLineNumbers] = useState<boolean>(true);
+  const [simpleShowLineNumbers, setSimpleShowLineNumbers] = useState<boolean>(false);
   const [simpleStartLine, setSimpleStartLine] = useState<number>(1);
 
   const [theme, setTheme] = useState<ShikiThemeChoice>("vitesse-dark");

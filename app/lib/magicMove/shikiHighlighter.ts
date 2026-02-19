@@ -130,6 +130,15 @@ export const AVAILABLE_THEMES: readonly ShikiThemeChoice[] = [
   "vitesse-black",
 ] as const;
 
+export function getGroupedThemes() {
+  const dark = AVAILABLE_THEMES.filter((t) => getThemeVariant(t) === "dark");
+  const light = AVAILABLE_THEMES.filter((t) => getThemeVariant(t) === "light");
+  return [
+    { label: "Dark", items: dark },
+    { label: "Light", items: light },
+  ];
+}
+
 export const AVAILABLE_LANGUAGES = [
   // Web fundamentals
   "javascript",
@@ -183,6 +192,7 @@ export function getThemeVariant(theme: ShikiThemeChoice): "light" | "dark" {
   const lightThemes: ShikiThemeChoice[] = [
     "github-light",
     "vitesse-light",
+    "kanagawa-lotus",
     "catppuccin-latte",
     "solarized-light",
     "rose-pine-dawn",

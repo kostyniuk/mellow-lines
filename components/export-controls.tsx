@@ -35,7 +35,7 @@ export function ExportControls({
   canExport,
   filename,
 }: ExportControlsProps) {
-  const [format, setFormat] = useState<"webm" | "mp4">("webm");
+  const [format, setFormat] = useState<"webm" | "mp4">("mp4");
 
   const statusText = exportPhase === "saving" ? "Preparing" : "Recording";
 
@@ -70,8 +70,8 @@ export function ExportControls({
           className="w-fit"
         >
           <TabsList>
-            <TabsTrigger value="webm">WebM</TabsTrigger>
             <TabsTrigger value="mp4">MP4</TabsTrigger>
+            <TabsTrigger value="webm">WebM</TabsTrigger>
           </TabsList>
         </Tabs>
 

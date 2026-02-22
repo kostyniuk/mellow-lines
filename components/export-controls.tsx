@@ -60,7 +60,7 @@ export function ExportControls({
             className="w-fit"
           >
             <TabsList className="h-8">
-              <TabsTrigger value="magic-move" className="text-xs">Magic Move</TabsTrigger>
+              <TabsTrigger value="tokens-move" className="text-xs">Tokens Move</TabsTrigger>
               <TabsTrigger value="fade" className="text-xs">Fade</TabsTrigger>
             </TabsList>
           </Tabs>

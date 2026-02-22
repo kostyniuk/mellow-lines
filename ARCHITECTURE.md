@@ -490,7 +490,7 @@ renderAt(0);
 )}
 ```
 
-**NEW**: Uses custom `exportFilename` instead of hardcoded "magic-move.webm"
+**NEW**: Uses custom `exportFilename` instead of hardcoded "mellow-lines.webm"
 
 ---
 

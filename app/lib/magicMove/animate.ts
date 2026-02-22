@@ -1,4 +1,5 @@
 import type { LaidToken, LayoutResult } from "./codeLayout";
+import { AnimationType } from "./types";
 
 type AnimatedToken = {
   content: string;
@@ -18,11 +19,7 @@ function clamp01(x: number): number {
 
 const STAGGER_WINDOW = 0.5;
 
-function staggeredOpacity(
-  count: number,
-  globalProgress: number,
-  fadeIn: boolean,
-): number[] {
+function staggeredOpacity(count: number, globalProgress: number, fadeIn: boolean): number[] {
   if (count === 0) return [];
   if (count === 1) return [fadeIn ? globalProgress : 1 - globalProgress];
 
@@ -54,7 +51,7 @@ export function animateLayouts(opts: {
   from: LayoutResult;
   to: LayoutResult;
   progress: number; // 0..1
-  type?: "magic-move" | "fade";
+  type?: AnimationType;
 }): { content: string; color: string; x: number; y: number; opacity: number }[] {
   const p = easeInOutCubic(clamp01(opts.progress));
 

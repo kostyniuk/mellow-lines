@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import type { AnimationType } from "@/app/lib/magicMove/types";
 
 interface ExportControlsProps {
   stepCount: number;
@@ -20,6 +21,8 @@ interface ExportControlsProps {
   onExport: (format: "webm" | "mp4") => void;
   canExport: boolean;
   filename: string;
+  animationType: AnimationType;
+  onAnimationTypeChange: (value: AnimationType) => void;
 }
 
 export function ExportControls({
@@ -34,6 +37,8 @@ export function ExportControls({
   onExport,
   canExport,
   filename,
+  animationType,
+  onAnimationTypeChange,
 }: ExportControlsProps) {
   const [format, setFormat] = useState<"webm" | "mp4">("mp4");
 
@@ -48,8 +53,22 @@ export function ExportControls({
         </div>
 
         <div className="flex items-center gap-2">
+          <Label className="text-xs whitespace-nowrap">Animation:</Label>
+          <Tabs
+            value={animationType}
+            onValueChange={(v) => onAnimationTypeChange(v as AnimationType)}
+            className="w-fit"
+          >
+            <TabsList className="h-8">
+              <TabsTrigger value="magic-move" className="text-xs">Magic Move</TabsTrigger>
+              <TabsTrigger value="fade" className="text-xs">Fade</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+
+        <div className="flex items-center gap-2">
           <Label className="text-xs whitespace-nowrap">
-            Transition: {(transitionMs / 1000).toFixed(1)}s
+            Duration: {(transitionMs / 1000).toFixed(1)}s
           </Label>
           <Slider
             value={[transitionMs]}

@@ -24,6 +24,7 @@ import type { MagicMoveStep, SimpleStep } from "../lib/magicMove/types";
 import { recordCanvasToWebm } from "../lib/video/recordCanvas";
 import { convertWebmToMp4, terminateFFmpeg } from "../lib/video/converter";
 import { DEFAULT_STEPS } from "../lib/constants";
+import type { AnimationType } from "../lib/magicMove/types";
 
 import { ResizableHandle, ResizablePanelGroup } from "@/components/ui/resizable";
 import { StepsEditor } from "@/components/steps-editor";
@@ -54,6 +55,7 @@ export default function Home() {
   const [betweenHoldMs, setBetweenHoldMs] = useState<number>(200);
   const [endHoldMs, setEndHoldMs] = useState<number>(500);
   const [filename, setFilename] = useState<string>("Untitled-1");
+  const [animationType, setAnimationType] = useState<AnimationType>("magic-move");
 
   // Compute steps from simple mode
   const steps = useMemo<MagicMoveStep[]>(() => {
@@ -231,7 +233,7 @@ export default function Home() {
       URL.revokeObjectURL(downloadUrl);
       setDownloadUrl(null);
     }
-  }, [steps, theme, fps, transitionMs, startHoldMs, betweenHoldMs, endHoldMs]); // Only those that affect the video content
+  }, [steps, theme, fps, transitionMs, startHoldMs, betweenHoldMs, endHoldMs, animationType]); // Only those that affect the video content
 
   const renderAt = useCallback(
     (ms: number, overrideDimensions?: CanvasDimensions) => {
@@ -305,7 +307,8 @@ export default function Home() {
 
         if (t <= transitionMs) {
           const progress = transitionMs <= 0 ? 1 : t / transitionMs;
-          const animated = animateLayouts({ from: a.layout, to: b.layout, progress });
+
+          const animated = animateLayouts({ from: a.layout, to: b.layout, progress, type: animationType });
           drawCodeFrame({
             ctx,
             config: cfg,
@@ -352,7 +355,7 @@ export default function Home() {
         // Title is shown via HTML input overlay in preview
       });
     },
-    [stepLayouts, theme, timeline, transitionMs, canvasDimensions],
+    [stepLayouts, theme, timeline, transitionMs, canvasDimensions, animationType],
   );
 
   useEffect(() => {
@@ -566,7 +569,8 @@ export default function Home() {
 
         if (t <= transitionMs) {
           const progress = transitionMs <= 0 ? 1 : t / transitionMs;
-          const animated = animateLayouts({ from: a.layout, to: b.layout, progress });
+
+          const animated = animateLayouts({ from: a.layout, to: b.layout, progress, type: animationType });
           drawCodeFrame({
             ctx,
             config: finalExportCfg,
@@ -723,6 +727,8 @@ export default function Home() {
           canExport={canExport}
           filename={filename}
           onFilenameChange={setFilename}
+          animationType={animationType}
+          onAnimationTypeChange={setAnimationType}
         />
       </ResizablePanelGroup>
     </div>

@@ -9,6 +9,8 @@ export type MagicMoveStep = {
   meta: MagicMoveStepMeta;
 };
 
+export type AnimationType = "magic-move" | "fade";
+
 export type SimpleStep = {
   id: string;
   code: string;

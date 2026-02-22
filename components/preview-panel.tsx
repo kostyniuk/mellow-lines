@@ -4,6 +4,7 @@ import { ResizablePanel } from "@/components/ui/resizable";
 import { CanvasPreview } from "./canvas-preview";
 import { PlayerControls } from "./player-controls";
 import { ExportControls } from "./export-controls";
+import type { AnimationType } from "@/app/lib/magicMove/types";
 
 interface PreviewPanelProps {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
@@ -27,6 +28,8 @@ interface PreviewPanelProps {
   canExport: boolean;
   filename: string;
   onFilenameChange: (value: string) => void;
+  animationType: AnimationType;
+  onAnimationTypeChange: (value: AnimationType) => void;
 }
 
 export function PreviewPanel({
@@ -51,6 +54,8 @@ export function PreviewPanel({
   canExport,
   filename,
   onFilenameChange,
+  animationType,
+  onAnimationTypeChange,
 }: PreviewPanelProps) {
   return (
     <ResizablePanel
@@ -89,6 +94,8 @@ export function PreviewPanel({
         onExport={onExport}
         canExport={canExport}
         filename={filename}
+        animationType={animationType}
+        onAnimationTypeChange={onAnimationTypeChange}
       />
     </ResizablePanel>
   );

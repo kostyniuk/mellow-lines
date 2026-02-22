@@ -16,6 +16,26 @@ function clamp01(x: number): number {
   return Math.max(0, Math.min(1, x));
 }
 
+const STAGGER_WINDOW = 0.5;
+
+function staggeredOpacity(
+  count: number,
+  globalProgress: number,
+  fadeIn: boolean,
+): number[] {
+  if (count === 0) return [];
+  if (count === 1) return [fadeIn ? globalProgress : 1 - globalProgress];
+
+  const opacities = new Array<number>(count);
+  for (let i = 0; i < count; i++) {
+    const startFraction = (i / (count - 1)) * (1 - STAGGER_WINDOW);
+    const localP = clamp01((globalProgress - startFraction) / STAGGER_WINDOW);
+    const easedLocal = easeInOutCubic(localP);
+    opacities[i] = fadeIn ? easedLocal : 1 - easedLocal;
+  }
+  return opacities;
+}
+
 function buildOccurrenceKey(tokens: LaidToken[]) {
   const counts = new Map<string, number>();
   const keyed: { occKey: string; t: LaidToken }[] = [];
@@ -34,8 +54,24 @@ export function animateLayouts(opts: {
   from: LayoutResult;
   to: LayoutResult;
   progress: number; // 0..1
+  type?: "magic-move" | "fade";
 }): { content: string; color: string; x: number; y: number; opacity: number }[] {
   const p = easeInOutCubic(clamp01(opts.progress));
+
+  const animated: AnimatedToken[] = [];
+
+  if (opts.type === "fade") {
+    // For fade, tokens stay in their respective positions and cross-fade opacities
+    const fadeOutOpacities = staggeredOpacity(opts.from.tokens.length, p, false);
+    for (let i = 0; i < opts.from.tokens.length; i++) {
+      animated.push({ ...opts.from.tokens[i], opacity: fadeOutOpacities[i] });
+    }
+    const fadeInOpacities = staggeredOpacity(opts.to.tokens.length, p, true);
+    for (let i = 0; i < opts.to.tokens.length; i++) {
+      animated.push({ ...opts.to.tokens[i], opacity: fadeInOpacities[i] });
+    }
+    return animated;
+  }
 
   const fromKeyed = buildOccurrenceKey(opts.from.tokens);
   const toKeyed = buildOccurrenceKey(opts.to.tokens);
@@ -44,7 +80,7 @@ export function animateLayouts(opts: {
   for (const { occKey, t } of toKeyed) toMap.set(occKey, t);
 
   const usedTo = new Set<string>();
-  const animated: AnimatedToken[] = [];
+  const removedTokens: LaidToken[] = [];
 
   for (const { occKey, t: a } of fromKeyed) {
     const b = toMap.get(occKey);
@@ -58,25 +94,38 @@ export function animateLayouts(opts: {
         opacity: 1,
       });
     } else {
-      animated.push({
-        content: a.content,
-        color: a.color,
-        x: a.x,
-        y: a.y,
-        opacity: 1 - p,
-      });
+      removedTokens.push(a);
     }
   }
 
-  // Fade in new tokens
+  // Staggered fade out for removed tokens
+  const removedOpacities = staggeredOpacity(removedTokens.length, p, false);
+  for (let i = 0; i < removedTokens.length; i++) {
+    const t = removedTokens[i];
+    animated.push({
+      content: t.content,
+      color: t.color,
+      x: t.x,
+      y: t.y,
+      opacity: removedOpacities[i],
+    });
+  }
+
+  // Staggered fade in for new tokens
+  const newTokens: LaidToken[] = [];
   for (const { occKey, t: b } of toKeyed) {
     if (usedTo.has(occKey)) continue;
+    newTokens.push(b);
+  }
+  const newOpacities = staggeredOpacity(newTokens.length, p, true);
+  for (let i = 0; i < newTokens.length; i++) {
+    const t = newTokens[i];
     animated.push({
-      content: b.content,
-      color: b.color,
-      x: b.x,
-      y: b.y,
-      opacity: p,
+      content: t.content,
+      color: t.color,
+      x: t.x,
+      y: t.y,
+      opacity: newOpacities[i],
     });
   }
 

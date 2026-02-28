@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { AnimationType } from "@/app/lib/magicMove/types";
+import type { RenderTheme } from "@/app/lib/magicMove/codeLayout";
+import { cn } from "@/lib/utils";
 
 interface CanvasPreviewProps {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
@@ -19,6 +21,7 @@ interface CanvasPreviewProps {
   onAnimationTypeChange: (value: AnimationType) => void;
   naturalFlow: boolean;
   onNaturalFlowChange: (value: boolean) => void;
+  themeVariant: RenderTheme;
 }
 
 export function CanvasPreview({
@@ -32,6 +35,7 @@ export function CanvasPreview({
   onAnimationTypeChange,
   naturalFlow,
   onNaturalFlowChange,
+  themeVariant,
 }: CanvasPreviewProps) {
   const hasShownRef = useRef(false);
   const shouldAnimate = !isLoading && !hasShownRef.current;
@@ -63,12 +67,17 @@ export function CanvasPreview({
           >
             <canvas ref={canvasRef} className="block" />
             {/* Filename input overlay - displays title in preview */}
-            <div className="absolute top-0 left-0 right-0 h-8 flex items-center justify-center">
+            <div className="absolute top-0 left-0 right-0 h-10 flex items-center justify-center">
               <input
                 type="text"
                 value={filename}
                 onChange={(e) => onFilenameChange(e.target.value)}
-                className="bg-transparent text-center text-xs text-white/40 placeholder:text-white/25 border-none outline-none focus:ring-0 focus:outline-none w-48 px-2 py-1 cursor-text"
+                className={cn(
+                  "bg-transparent text-center text-sm border-none outline-none focus:ring-0 focus:outline-none w-48 px-2 py-1 cursor-text",
+                  themeVariant === "dark"
+                    ? "text-white/60 placeholder:text-white/25"
+                    : "text-black/60 placeholder:text-black/25"
+                )}
                 placeholder="Untitled-1"
               />
             </div>

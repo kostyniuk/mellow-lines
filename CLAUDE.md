@@ -1,5 +1,9 @@
 # CLAUDE.md
 
+## Code quality
+
+After making code changes, always run `npx tsc --noEmit` to check for TypeScript errors and fix any issues before considering the task complete.
+
 ## Git workflow
 
 When asked to commit, always:

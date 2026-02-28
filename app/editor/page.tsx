@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTheme } from "next-themes";
 import { nanoid } from "nanoid";
 
 import { animateLayouts } from "../lib/magicMove/animate";
@@ -14,7 +15,7 @@ import {
   makeDefaultLayoutConfig,
   makePreviewLayoutConfig,
 } from "../lib/magicMove/codeLayout";
-import type { CanvasLayoutConfig, LayoutResult } from "../lib/magicMove/codeLayout";
+import type { CanvasLayoutConfig, LayoutResult, RenderTheme } from "../lib/magicMove/codeLayout";
 import {
   getThemeVariant,
   shikiTokenizeToLines,
@@ -194,7 +195,8 @@ export default function Home() {
   const [simpleShowLineNumbers, setSimpleShowLineNumbers] = useState<boolean>(false);
   const [simpleStartLine, setSimpleStartLine] = useState<number>(1);
 
-  const [theme, setTheme] = useState<ShikiThemeChoice>("vitesse-dark");
+  const [theme, setCodeTheme] = useState<ShikiThemeChoice>("vitesse-dark");
+  const { setTheme: setSiteTheme } = useTheme();
   const [fps, setFps] = useState<number>(60);
   const [transitionMs, setTransitionMs] = useState<number>(700);
   const [startHoldMs, setStartHoldMs] = useState<number>(500);
@@ -719,7 +721,11 @@ export default function Home() {
           selectedLang={selectedLang}
           onLangChange={setSelectedLang}
           theme={theme}
-          onThemeChange={(v) => setTheme(v as ShikiThemeChoice)}
+          onThemeChange={(v) => {
+            const newTheme = v as ShikiThemeChoice;
+            setCodeTheme(newTheme);
+            setSiteTheme(getThemeVariant(newTheme));
+          }}
           showLineNumbers={simpleShowLineNumbers}
           onShowLineNumbersChange={setSimpleShowLineNumbers}
           startLine={simpleStartLine}
@@ -775,6 +781,7 @@ export default function Home() {
           onTypingWpmChange={setTypingWpm}
           naturalFlow={naturalFlow}
           onNaturalFlowChange={setNaturalFlow}
+          themeVariant={getThemeVariant(theme)}
         />
       </ResizablePanelGroup>
     </div>

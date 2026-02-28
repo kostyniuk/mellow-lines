@@ -5,6 +5,7 @@ import { CanvasPreview } from "./canvas-preview";
 import { PlayerControls } from "./player-controls";
 import { ExportControls } from "./export-controls";
 import type { AnimationType } from "@/app/lib/magicMove/types";
+import type { RenderTheme } from "@/app/lib/magicMove/codeLayout";
 
 interface PreviewPanelProps {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
@@ -34,6 +35,7 @@ interface PreviewPanelProps {
   onTypingWpmChange: (value: number) => void;
   naturalFlow: boolean;
   onNaturalFlowChange: (value: boolean) => void;
+  themeVariant: RenderTheme;
 }
 
 export function PreviewPanel({
@@ -64,6 +66,7 @@ export function PreviewPanel({
   onTypingWpmChange,
   naturalFlow,
   onNaturalFlowChange,
+  themeVariant,
 }: PreviewPanelProps) {
   return (
     <ResizablePanel
@@ -82,6 +85,7 @@ export function PreviewPanel({
         onAnimationTypeChange={onAnimationTypeChange}
         naturalFlow={naturalFlow}
         onNaturalFlowChange={onNaturalFlowChange}
+        themeVariant={themeVariant}
       />
 
       <PlayerControls

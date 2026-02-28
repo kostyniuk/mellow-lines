@@ -92,7 +92,7 @@ export function ExportControls({
           onValueChange={(v) => setFormat(v as "webm" | "mp4")}
           className="w-fit"
         >
-          <TabsList>
+          <TabsList variant="transparent">
             <TabsTrigger value="mp4">MP4</TabsTrigger>
             <TabsTrigger value="webm">WebM</TabsTrigger>
           </TabsList>

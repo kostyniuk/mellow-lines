@@ -83,13 +83,9 @@ export function CanvasPreview({
             onValueChange={(v) => onAnimationTypeChange(v as AnimationType)}
             className="w-fit"
           >
-            <TabsList className="bg-transparent rounded-full p-0.5 gap-0.5">
-              <TabsTrigger value="typing" className="rounded-full text-xs px-3 py-1 h-auto data-active:bg-background/80 data-active:shadow-sm">
-                Typing
-              </TabsTrigger>
-              <TabsTrigger value="token-flow" className="rounded-full text-xs px-3 py-1 h-auto data-active:bg-background/80 data-active:shadow-sm">
-                Token Flow
-              </TabsTrigger>
+            <TabsList variant="transparent">
+              <TabsTrigger value="typing">Typing</TabsTrigger>
+              <TabsTrigger value="token-flow">Token Flow</TabsTrigger>
             </TabsList>
           </Tabs>
 

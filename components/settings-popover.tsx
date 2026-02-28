@@ -118,7 +118,7 @@ export function SettingsPopover({
                 onValueChange={(v) => onFpsChange(Number(v))}
                 className="w-fit"
               >
-                <TabsList>
+                <TabsList variant="transparent">
                   <TabsTrigger value="30">30</TabsTrigger>
                   <TabsTrigger value="60">60</TabsTrigger>
                 </TabsList>

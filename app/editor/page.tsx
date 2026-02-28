@@ -14,7 +14,7 @@ import {
   makeDefaultLayoutConfig,
   makePreviewLayoutConfig,
 } from "../lib/magicMove/codeLayout";
-import type { LayoutResult } from "../lib/magicMove/codeLayout";
+import type { LayoutResult, RenderTheme } from "../lib/magicMove/codeLayout";
 import {
   getThemeVariant,
   shikiTokenizeToLines,
@@ -729,6 +729,7 @@ export default function Home() {
           canExport={canExport}
           filename={filename}
           onFilenameChange={setFilename}
+          themeVariant={getThemeVariant(theme)}
         />
       </ResizablePanelGroup>
     </div>

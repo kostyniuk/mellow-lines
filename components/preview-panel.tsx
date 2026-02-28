@@ -4,6 +4,7 @@ import { ResizablePanel } from "@/components/ui/resizable";
 import { CanvasPreview } from "./canvas-preview";
 import { PlayerControls } from "./player-controls";
 import { ExportControls } from "./export-controls";
+import type { RenderTheme } from "@/app/lib/magicMove/codeLayout";
 
 interface PreviewPanelProps {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
@@ -27,6 +28,7 @@ interface PreviewPanelProps {
   canExport: boolean;
   filename: string;
   onFilenameChange: (value: string) => void;
+  themeVariant: RenderTheme;
 }
 
 export function PreviewPanel({
@@ -51,6 +53,7 @@ export function PreviewPanel({
   canExport,
   filename,
   onFilenameChange,
+  themeVariant,
 }: PreviewPanelProps) {
   return (
     <ResizablePanel
@@ -65,6 +68,7 @@ export function PreviewPanel({
         isLoading={!stepLayouts}
         filename={filename}
         onFilenameChange={onFilenameChange}
+        themeVariant={themeVariant}
       />
 
       <PlayerControls

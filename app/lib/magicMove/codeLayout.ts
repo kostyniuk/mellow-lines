@@ -70,7 +70,7 @@ export function makePreviewLayoutConfig(): CanvasLayoutConfig {
       'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
     showLineNumbers: false,
     startLine: 1,
-    titleBarHeight: 32,
+    titleBarHeight: 40,
   };
 }
 

@@ -12,6 +12,7 @@ import { Wand2, Play, Keyboard, Palette, Download, Settings, Paintbrush, Layers 
 import { Badge } from "@/components/ui/badge";
 import { GitHubIcon, TwitterIcon } from "@/components/ui/icons";
 import { ThemedLightRays } from "@/components/themed-light-rays";
+import { ThemedVideo } from "@/components/themed-video";
 
 export default function Page() {
   return (
@@ -91,12 +92,9 @@ export default function Page() {
                 <div className="border-t border-border/40 bg-muted/20 relative">
                   {/* Subtle inner shadow for depth feeling */}
                   <div className="absolute inset-0 shadow-[inset_0_0_20px_rgba(0,0,0,0.1)] pointer-events-none z-20" />
-                  <video
-                    src="/demo.mp4"
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
+                  <ThemedVideo
+                    darkSrc="/demo.mp4"
+                    lightSrc="/demo-light.mp4"
                     className="w-full h-auto relative z-10 opacity-90 group-hover:opacity-100 transition-opacity"
                   />
                 </div>
@@ -121,13 +119,9 @@ export default function Page() {
                 <div className="border-t border-border/40 bg-muted/20 relative">
                   {/* Subtle inner shadow for depth feeling */}
                   <div className="absolute inset-0 shadow-[inset_0_0_20px_rgba(0,0,0,0.1)] pointer-events-none z-20" />
-                  {/* Using demo.mp4 as placeholder until typing video is provided */}
-                  <video
-                    src="/typing-demo.mp4"
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
+                  <ThemedVideo
+                    darkSrc="/typing-demo.mp4"
+                    lightSrc="/typing-demo-light.mp4"
                     className="w-full h-auto relative z-10 opacity-90 group-hover:opacity-100 transition-opacity"
                   />
                 </div>

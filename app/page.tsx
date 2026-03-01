@@ -8,7 +8,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 
-import { ArrowRight, Wand2, Video, Layers, Play } from "lucide-react";
+import { Wand2, Play, Keyboard, Palette, Download, Settings, Paintbrush, Layers } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { GitHubIcon, TwitterIcon } from "@/components/ui/icons";
 import { ThemedLightRays } from "@/components/themed-light-rays";
@@ -71,49 +71,111 @@ export default function Page() {
             </div>
           </div>
 
-          {/* Hero Video Demo - Center Bottom */}
-          <div className="w-full max-w-3xl mx-auto mt-12 sm:mt-16 lg:mt-20 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 fill-mode-backwards">
-            <div className="relative rounded-xl overflow-hidden shadow-2xl">
-              {/* Shiny border effect */}
-              <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/40 via-primary/60 to-primary/40 p-[1px]">
-                <div className="absolute inset-[1px] rounded-xl bg-background" />
-              </div>
+          {/* Use Cases - Bento Grid */}
+          <div className="w-full max-w-5xl mx-auto mt-12 sm:mt-16 lg:mt-20 grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 fill-mode-backwards">
+            {/* Context/Transition Use Case */}
+            <Card className="relative overflow-hidden border-border/40 bg-muted/10 backdrop-blur-sm shadow-xl transition-all duration-300 group hover:border-border/80">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <CardHeader className="pb-4 relative z-10">
+                <CardTitle className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+                  <div className="p-2 bg-primary/10 rounded-md">
+                    <Wand2 className="w-5 h-5 text-primary" />
+                  </div>
+                  Code Transitions
+                </CardTitle>
+                <CardDescription className="text-sm sm:text-base leading-relaxed mt-2 text-muted-foreground">
+                  Transform code blocks with fluid, cinematic animations. Perfect for visualizing refactors and diffs.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-0 relative z-10">
+                <div className="border-t border-border/40 bg-muted/20 relative">
+                  {/* Subtle inner shadow for depth feeling */}
+                  <div className="absolute inset-0 shadow-[inset_0_0_20px_rgba(0,0,0,0.1)] pointer-events-none z-20" />
+                  <video
+                    src="/demo.mp4"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className="w-full h-auto relative z-10 opacity-90 group-hover:opacity-100 transition-opacity"
+                  />
+                </div>
+              </CardContent>
+            </Card>
 
-              {/* Video container */}
-              <div className="relative rounded-xl overflow-hidden bg-muted/20">
-                <video
-                  src="/demo.mp4"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  className="w-full h-auto relative z-10"
-                />
-              </div>
-            </div>
+            {/* Typing Use Case */}
+            <Card className="relative overflow-hidden border-border/40 bg-muted/10 backdrop-blur-sm shadow-xl transition-all duration-300 group hover:border-border/80">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <CardHeader className="pb-4 relative z-10">
+                <CardTitle className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+                  <div className="p-2 bg-primary/10 rounded-md">
+                    <Keyboard className="w-5 h-5 text-primary" />
+                  </div>
+                  Typing Animations
+                </CardTitle>
+                <CardDescription className="text-sm sm:text-base leading-relaxed mt-2 text-muted-foreground">
+                  Bring static text to life with customizable typing effects. Control your flow and typing styles effortlessly.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-0 relative z-10">
+                <div className="border-t border-border/40 bg-muted/20 relative">
+                  {/* Subtle inner shadow for depth feeling */}
+                  <div className="absolute inset-0 shadow-[inset_0_0_20px_rgba(0,0,0,0.1)] pointer-events-none z-20" />
+                  {/* Using demo.mp4 as placeholder until typing video is provided */}
+                  <video
+                    src="/typing-demo.mp4"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className="w-full h-auto relative z-10 opacity-90 group-hover:opacity-100 transition-opacity"
+                  />
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Features Preview */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mt-16 sm:mt-20 lg:mt-24 w-full animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300 fill-mode-backwards">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-16 sm:mt-20 lg:mt-24 w-full max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300 fill-mode-backwards">
             <FeatureCard
-              icon={<Wand2 className="w-5 h-5 text-primary" />}
-              title="Magic Transitions"
-              description="Automatically analyze and animate code diffs with smooth, cinematic movement."
+              icon={<Wand2 className="w-6 h-6" />}
+              title="Smart Transitions"
+              description="Automatically analyze code diffs and create smooth, cinematic movements between changes."
             />
             <FeatureCard
-              icon={<Video className="w-5 h-5 text-primary" />}
-              title="High-Quality Export"
-              description="Render blazing fast, high-quality MP4 & WebM videos ready for social media."
+              icon={<Keyboard className="w-6 h-6" />}
+              title="Realistic Typing"
+              description="Simulate natural human keystrokes with customizable speed and flow for presentations."
             />
             <FeatureCard
-              icon={<Layers className="w-5 h-5 text-primary" />}
+              icon={<Palette className="w-6 h-6" />}
               title="Rich Theming"
-              description="Select from a vast library of syntax themes and languages to match your brand."
+              description="Select from a vast library of syntax themes, beautiful backgrounds, and modern fonts."
             />
             <FeatureCard
-              icon={<Play className="w-5 h-5 text-primary" />}
+              icon={<Download className="w-6 h-6" />}
+              title="High-Quality Export"
+              description="Render blazing fast, crisp MP4 & WebM videos perfectly optimized for social media."
+            />
+            <FeatureCard
+              icon={<Play className="w-6 h-6" />}
               title="Real-Time Preview"
-              description="See your animation come to life instantly with live preview and timeline scrubbing."
+              description="See your animation come to life instantly with live preview and interactive timeline scrubbing."
+            />
+            <FeatureCard
+              icon={<Settings className="w-6 h-6" />}
+              title="Fully Customizable"
+              description="Tweak padding, drop shadows, window controls, and typography to fit your exact brand style."
+            />
+            <FeatureCard
+              icon={<Paintbrush className="w-6 h-6" />}
+              title="Background Theming"
+              description="Pick from handcrafted gradient backgrounds, color accents, and patterns to frame your code beautifully."
+            />
+            <FeatureCard
+              icon={<Layers className="w-6 h-6" />}
+              title="Multi-Step Scenes"
+              description="Chain multiple code states into a sequence of scenes for complete, story-driven walkthroughs."
             />
           </div>
         </div>
@@ -159,15 +221,18 @@ function FeatureCard({
   description: string;
 }) {
   return (
-    <Card className="bg-muted/30 border-border/50 hover:border-border transition-all duration-200 shadow-none hover:shadow-md">
-      <CardHeader className="pb-3">
-        <div className="mb-2 p-2 bg-primary/10 rounded-md w-fit">{icon}</div>
-        <CardTitle className="text-base sm:text-lg font-semibold">
+    <Card className="relative overflow-hidden border-border/40 bg-muted/10 backdrop-blur-sm shadow-md transition-all duration-300 group hover:border-border/80 hover:shadow-xl">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <CardHeader className="pb-3 relative z-10">
+        <div className="mb-3 p-2.5 bg-primary/10 text-primary rounded-lg w-fit">
+          {icon}
+        </div>
+        <CardTitle className="text-base sm:text-lg font-bold">
           {title}
         </CardTitle>
       </CardHeader>
-      <CardContent className="pt-0">
-        <CardDescription className="text-sm leading-relaxed">
+      <CardContent className="pt-0 relative z-10">
+        <CardDescription className="text-sm sm:text-base leading-relaxed text-muted-foreground transition-colors group-hover:text-foreground/80">
           {description}
         </CardDescription>
       </CardContent>

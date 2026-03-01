@@ -96,6 +96,8 @@ export function drawCodeFrame(opts: {
   transitionProgress?: number;
   // Optional title for the title bar
   title?: string;
+  // Optional cursor for typing animation
+  cursor?: { x: number; y: number; color: string } | null;
 }) {
   const { ctx, config, layout } = opts;
 
@@ -196,6 +198,16 @@ export function drawCodeFrame(opts: {
     ctx.globalAlpha = Math.max(0, Math.min(1, t.opacity));
     ctx.fillStyle = t.color;
     ctx.fillText(t.content, t.x, t.y);
+  }
+
+  // Draw cursor if provided (typing animation)
+  // Text uses textBaseline="top", so text starts at y and extends down by fontSize.
+  // Place cursor at the same y, matching the text height exactly.
+  if (opts.cursor) {
+    const { x, y, color } = opts.cursor;
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, 2, config.fontSize);
   }
 
   ctx.restore();

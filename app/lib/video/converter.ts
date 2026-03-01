@@ -7,6 +7,7 @@ export async function convertWebmToMp4(
   webmBlob: Blob,
   onProgress?: (progress: number) => void,
   totalDurationMs?: number,
+  audioBlob?: Blob,
 ): Promise<Blob> {
   // Lazy init
   if (!ffmpeg) {
@@ -25,6 +26,7 @@ export async function convertWebmToMp4(
   }
 
   const inputName = "input.webm";
+  const audioName = "audio.wav";
   const outputName = "output.mp4";
 
   const progressHandler = ({ progress, time }: { progress: number; time: number }) => {
@@ -46,21 +48,37 @@ export async function convertWebmToMp4(
     // Write input (use fetchFile for memory efficiency)
     await ffmpeg.writeFile(inputName, await fetchFile(webmBlob));
 
-    // Convert with H.264
-    await ffmpeg.exec([
-      "-i",
-      inputName,
-      "-c:v",
-      "libx264",
-      "-preset",
-      "medium",
-      "-crf",
-      "18", // High quality (lower = better, 18 is visually lossless)
-      "-pix_fmt",
-      "yuv420p", // Ensures compatibility with most players
-      "-an", // No audio
-      outputName,
-    ]);
+    if (audioBlob) {
+      await ffmpeg.writeFile(audioName, await fetchFile(audioBlob));
+    }
+
+    // Convert with H.264, optionally muxing audio
+    const args = audioBlob
+      ? [
+          "-i", inputName,
+          "-i", audioName,
+          "-c:v", "libx264",
+          "-preset", "medium",
+          "-crf", "18",
+          "-pix_fmt", "yuv420p",
+          "-c:a", "aac",
+          "-b:a", "128k",
+          "-map", "0:v:0",
+          "-map", "1:a:0",
+          "-shortest",
+          outputName,
+        ]
+      : [
+          "-i", inputName,
+          "-c:v", "libx264",
+          "-preset", "medium",
+          "-crf", "18",
+          "-pix_fmt", "yuv420p",
+          "-an",
+          outputName,
+        ];
+
+    await ffmpeg.exec(args);
 
     // Read output
     const data = await ffmpeg.readFile(outputName);
@@ -68,6 +86,9 @@ export async function convertWebmToMp4(
     // Cleanup
     await ffmpeg.deleteFile(inputName);
     await ffmpeg.deleteFile(outputName);
+    if (audioBlob) {
+      try { await ffmpeg.deleteFile(audioName); } catch (e) { console.warn("Failed to clean up audio file:", e); }
+    }
 
     // Convert FileData to BlobPart
     // FFmpeg's readFile returns Uint8Array, but we need to ensure it's compatible with Blob
@@ -94,6 +115,7 @@ export async function convertWebmToMp4(
     try {
       await ffmpeg.deleteFile(inputName);
       await ffmpeg.deleteFile(outputName);
+      if (audioBlob) await ffmpeg.deleteFile(audioName);
     } catch {}
     throw new Error(`MP4 conversion failed: ${error}`);
   } finally {

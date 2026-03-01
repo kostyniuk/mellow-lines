@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import type { AnimationType } from "@/app/lib/magicMove/types";
 
 interface ExportControlsProps {
   stepCount: number;
@@ -20,6 +21,9 @@ interface ExportControlsProps {
   onExport: (format: "webm" | "mp4") => void;
   canExport: boolean;
   filename: string;
+  animationType: AnimationType;
+  typingWpm: number;
+  onTypingWpmChange: (value: number) => void;
 }
 
 export function ExportControls({
@@ -34,6 +38,9 @@ export function ExportControls({
   onExport,
   canExport,
   filename,
+  animationType,
+  typingWpm,
+  onTypingWpmChange,
 }: ExportControlsProps) {
   const [format, setFormat] = useState<"webm" | "mp4">("mp4");
 
@@ -47,19 +54,35 @@ export function ExportControls({
           <span className="font-medium">{(totalMs / 1000).toFixed(1)}s</span> duration
         </div>
 
-        <div className="flex items-center gap-2">
-          <Label className="text-xs whitespace-nowrap">
-            Transition: {(transitionMs / 1000).toFixed(1)}s
-          </Label>
-          <Slider
-            value={[transitionMs]}
-            min={100}
-            max={5000}
-            step={100}
-            onValueChange={([v]) => onTransitionMsChange(v)}
-            className="w-40"
-          />
-        </div>
+        {animationType === "typing" ? (
+          <div className="flex items-center gap-2">
+            <Label className="text-xs whitespace-nowrap">
+              Speed: {typingWpm} WPM
+            </Label>
+            <Slider
+              value={[typingWpm]}
+              min={30}
+              max={600}
+              step={10}
+              onValueChange={([v]) => onTypingWpmChange(v)}
+              className="w-40"
+            />
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <Label className="text-xs whitespace-nowrap">
+              Transition: {(transitionMs / 1000).toFixed(1)}s
+            </Label>
+            <Slider
+              value={[transitionMs]}
+              min={100}
+              max={5000}
+              step={100}
+              onValueChange={([v]) => onTransitionMsChange(v)}
+              className="w-40"
+            />
+          </div>
+        )}
       </div>
 
       <div className="flex items-center gap-2">
@@ -69,7 +92,7 @@ export function ExportControls({
           onValueChange={(v) => setFormat(v as "webm" | "mp4")}
           className="w-fit"
         >
-          <TabsList>
+          <TabsList variant="transparent">
             <TabsTrigger value="mp4">MP4</TabsTrigger>
             <TabsTrigger value="webm">WebM</TabsTrigger>
           </TabsList>

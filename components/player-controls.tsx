@@ -1,6 +1,6 @@
 "use client";
 
-import { Play, Pause, RotateCcw } from "lucide-react";
+import { Play, Pause, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
@@ -13,6 +13,8 @@ interface PlayerControlsProps {
   totalMs: number;
   onSeek: (ms: number) => void;
   onReset: () => void;
+  soundEnabled: boolean;
+  onSoundToggle: () => void;
   disabled?: boolean;
 }
 
@@ -23,6 +25,8 @@ export function PlayerControls({
   totalMs,
   onSeek,
   onReset,
+  soundEnabled,
+  onSoundToggle,
   disabled = false,
 }: PlayerControlsProps) {
   // Throttle (not debounce) because we want regular updates during playback.
@@ -72,6 +76,19 @@ export function PlayerControls({
           title="Reset"
         >
           <RotateCcw className="w-4 h-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-muted-foreground"
+          onClick={onSoundToggle}
+          title={soundEnabled ? "Mute typing sound" : "Unmute typing sound"}
+        >
+          {soundEnabled ? (
+            <Volume2 className="w-4 h-4" />
+          ) : (
+            <VolumeX className="w-4 h-4" />
+          )}
         </Button>
       </div>
     </div>

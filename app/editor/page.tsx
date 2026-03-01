@@ -1,10 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTheme } from "next-themes";
 import { nanoid } from "nanoid";
 
 import { animateLayouts } from "../lib/magicMove/animate";
 import { drawCodeFrame } from "../lib/magicMove/canvasRenderer";
+import { animateTyping, computeChangedChars } from "../lib/typing/animateTyping";
 import {
   calculateCanvasHeight,
   calculateCanvasWidth,
@@ -13,17 +15,19 @@ import {
   makeDefaultLayoutConfig,
   makePreviewLayoutConfig,
 } from "../lib/magicMove/codeLayout";
-import type { LayoutResult } from "../lib/magicMove/codeLayout";
+import type { CanvasLayoutConfig, LayoutResult, RenderTheme } from "../lib/magicMove/codeLayout";
 import {
   getThemeVariant,
   shikiTokenizeToLines,
   type ShikiThemeChoice,
   type TokenLine,
 } from "../lib/magicMove/shikiHighlighter";
-import type { MagicMoveStep, SimpleStep } from "../lib/magicMove/types";
+import type { AnimationType, Step, SimpleStep } from "../lib/magicMove/types";
 import { recordCanvasToWebm } from "../lib/video/recordCanvas";
 import { convertWebmToMp4, terminateFFmpeg } from "../lib/video/converter";
 import { DEFAULT_STEPS } from "../lib/constants";
+import { useTypingSound } from "../lib/audio/useTypingSound";
+import { generateTypingAudioTrack } from "../lib/audio/generateTypingAudioTrack";
 
 import { ResizableHandle, ResizablePanelGroup } from "@/components/ui/resizable";
 import { StepsEditor } from "@/components/steps-editor";
@@ -41,22 +45,174 @@ type CanvasDimensions = {
   height: number;
 };
 
+const CURSOR_BLINK_MS = 530;
+
+function createEmptyLayout(reference: StepLayout): StepLayout {
+  return {
+    layout: {
+      tokens: [],
+      bg: reference.layout.bg,
+      fg: reference.layout.fg,
+      gutter: reference.layout.gutter,
+      tokenLineCount: 0,
+    },
+    tokenLineCount: 0,
+    startLine: reference.startLine,
+    showLineNumbers: reference.showLineNumbers,
+  };
+}
+
+type TimelineInfo = {
+  totalMs: number;
+  startHold: number;
+  betweenHold: number;
+  endHold: number;
+};
+
+function renderTimeline(opts: {
+  ctx: CanvasRenderingContext2D;
+  config: CanvasLayoutConfig;
+  layouts: StepLayout[];
+  codes: string[];
+  timeline: TimelineInfo;
+  ms: number;
+  themeVariant: RenderTheme;
+  charWidth: number;
+  isTyping: boolean;
+  transitionMs: number;
+  typingDurations: number[] | null;
+  title?: string;
+  naturalFlow?: boolean;
+}): void {
+  const {
+    ctx, config, layouts, codes, timeline, ms, themeVariant,
+    charWidth, isTyping, transitionMs, typingDurations, title, naturalFlow,
+  } = opts;
+
+  const clampMs = Math.max(0, Math.min(timeline.totalMs, ms));
+  const gutterWidth = layouts[0]?.layout.gutter.width ?? 0;
+
+  const getBlinkCursor = (layout: LayoutResult) => {
+    if (!isTyping) return undefined;
+    const blinkOn = Math.floor(ms / CURSOR_BLINK_MS) % 2 === 0;
+    if (!blinkOn || layout.tokens.length === 0) return undefined;
+    const lastToken = layout.tokens[layout.tokens.length - 1];
+    return {
+      x: lastToken.x + lastToken.content.length * charWidth,
+      y: lastToken.y,
+      color: layout.fg,
+    };
+  };
+
+  const stepCount = layouts.length;
+
+  if (stepCount === 1) {
+    const only = layouts[0]!;
+    drawCodeFrame({
+      ctx, config, layout: only.layout, theme: themeVariant,
+      showLineNumbers: only.showLineNumbers, startLine: only.startLine,
+      lineCount: only.tokenLineCount, title, cursor: getBlinkCursor(only.layout),
+    });
+    return;
+  }
+
+  let t = clampMs;
+  if (t < timeline.startHold) {
+    const first = layouts[0]!;
+    drawCodeFrame({
+      ctx, config, layout: first.layout, theme: themeVariant,
+      showLineNumbers: first.showLineNumbers, startLine: first.startLine,
+      lineCount: first.tokenLineCount, title, cursor: getBlinkCursor(first.layout),
+    });
+    return;
+  }
+  t -= timeline.startHold;
+
+  for (let i = 0; i < stepCount - 1; i++) {
+    const a = layouts[i]!;
+    const b = layouts[i + 1]!;
+    const tDur = typingDurations ? typingDurations[i] : transitionMs;
+
+    if (t <= tDur) {
+      const progress = tDur <= 0 ? 1 : t / tDur;
+
+      if (isTyping) {
+        const result = animateTyping({
+          from: a.tokenLineCount === 0 ? null : a.layout,
+          to: b.layout,
+          fromCode: codes[i],
+          toCode: codes[i + 1],
+          progress,
+          charWidth,
+          lineHeight: config.lineHeight,
+          paddingX: config.paddingX,
+          paddingY: config.paddingY,
+          gutterWidth,
+          naturalFlow,
+        });
+        drawCodeFrame({
+          ctx, config, layout: b.layout, theme: themeVariant,
+          tokens: result.tokens, showLineNumbers: b.showLineNumbers,
+          startLine: b.startLine, lineCount: result.visibleLineCount, title,
+          cursor: result.cursor ? { ...result.cursor, color: b.layout.fg } : undefined,
+        });
+      } else {
+        const animated = animateLayouts({ from: a.layout, to: b.layout, progress });
+        drawCodeFrame({
+          ctx, config, layout: b.layout, theme: themeVariant,
+          tokens: animated,
+          showLineNumbers: a.showLineNumbers || b.showLineNumbers,
+          startLine: b.startLine,
+          lineCount: Math.max(a.tokenLineCount, b.tokenLineCount),
+          prevLineCount: a.tokenLineCount, targetLineCount: b.tokenLineCount,
+          transitionProgress: progress, title,
+        });
+      }
+      return;
+    }
+
+    t -= tDur;
+    if (t <= timeline.betweenHold) {
+      drawCodeFrame({
+        ctx, config, layout: b.layout, theme: themeVariant,
+        showLineNumbers: b.showLineNumbers, startLine: b.startLine,
+        lineCount: b.tokenLineCount, title, cursor: getBlinkCursor(b.layout),
+      });
+      return;
+    }
+    t -= timeline.betweenHold;
+  }
+
+  const last = layouts[stepCount - 1]!;
+  drawCodeFrame({
+    ctx, config, layout: last.layout, theme: themeVariant,
+    showLineNumbers: last.showLineNumbers, startLine: last.startLine,
+    lineCount: last.tokenLineCount, title, cursor: getBlinkCursor(last.layout),
+  });
+}
+
 export default function Home() {
   const [simpleSteps, setSimpleSteps] = useState<SimpleStep[]>(DEFAULT_STEPS);
   const [selectedLang, setSelectedLang] = useState<string>("typescript");
   const [simpleShowLineNumbers, setSimpleShowLineNumbers] = useState<boolean>(false);
   const [simpleStartLine, setSimpleStartLine] = useState<number>(1);
 
-  const [theme, setTheme] = useState<ShikiThemeChoice>("vitesse-dark");
+  const [theme, setCodeTheme] = useState<ShikiThemeChoice>("vitesse-dark");
+  const { setTheme: setSiteTheme } = useTheme();
   const [fps, setFps] = useState<number>(60);
   const [transitionMs, setTransitionMs] = useState<number>(700);
   const [startHoldMs, setStartHoldMs] = useState<number>(500);
   const [betweenHoldMs, setBetweenHoldMs] = useState<number>(200);
   const [endHoldMs, setEndHoldMs] = useState<number>(500);
   const [filename, setFilename] = useState<string>("Untitled-1");
+  const [animationType, setAnimationType] = useState<AnimationType>("typing");
+  const [typingWpm, setTypingWpm] = useState<number>(120);
+  const [naturalFlow, setNaturalFlow] = useState<boolean>(true);
+  const [soundEnabled, setSoundEnabled] = useState(false);
+  const previewCharWidthRef = useRef<number>(0);
 
   // Compute steps from simple mode
-  const steps = useMemo<MagicMoveStep[]>(() => {
+  const steps = useMemo<Step[]>(() => {
     return simpleSteps.map((step) => ({
       lang: selectedLang,
       code: step.code,
@@ -94,16 +250,40 @@ export default function Home() {
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [scrollToEndTrigger, setScrollToEndTrigger] = useState(0);
 
+  // For typing mode, we prepend a virtual empty step so the first transition types from scratch
+  const effectiveStepCount = animationType === "typing" ? steps.length + 1 : steps.length;
+
+  // Step codes aligned with effectiveStepLayouts
+  const effectiveStepCodes = useMemo(() => {
+    const codes = steps.map((s) => s.code);
+    if (animationType === "typing") return ["", ...codes];
+    return codes;
+  }, [steps, animationType]);
+
+  // Per-transition durations for typing mode (based on WPM)
+  const typingTransitionDurations = useMemo(() => {
+    if (animationType !== "typing" || effectiveStepCodes.length <= 1) return null;
+    return effectiveStepCodes.slice(0, -1).map((fromCode, i) => {
+      const toCode = effectiveStepCodes[i + 1];
+      const chars = computeChangedChars(fromCode, toCode);
+      return Math.max(500, (chars / 5 / typingWpm) * 60 * 1000);
+    });
+  }, [animationType, effectiveStepCodes, typingWpm]);
+
   const timeline = useMemo(() => {
-    const stepCount = steps.length;
+    const stepCount = effectiveStepCount;
     const startHold = startHoldMs;
     const betweenHold = betweenHoldMs;
     const endHold = endHoldMs;
     if (stepCount <= 1) return { totalMs: startHold + endHold, startHold, betweenHold, endHold };
     const transitions = stepCount - 1;
-    const totalMs = startHold + transitions * transitionMs + transitions * betweenHold + endHold;
+    const transitionTotal =
+      typingTransitionDurations
+        ? typingTransitionDurations.reduce((sum, d) => sum + d, 0)
+        : transitions * transitionMs;
+    const totalMs = startHold + transitionTotal + transitions * betweenHold + endHold;
     return { totalMs, startHold, betweenHold, endHold };
-  }, [steps.length, transitionMs, startHoldMs, betweenHoldMs, endHoldMs]);
+  }, [effectiveStepCount, transitionMs, startHoldMs, betweenHoldMs, endHoldMs, typingTransitionDurations]);
 
   useEffect(() => {
     let cancelled = false;
@@ -211,6 +391,7 @@ export default function Home() {
       }
 
       if (cancelled) return;
+      previewCharWidthRef.current = charWidth;
       setCanvasDimensions({ width: maxWidth, height: maxHeight });
       setStepLayouts(nextLayouts);
       // Store tokenized data for potential use in export
@@ -225,140 +406,65 @@ export default function Home() {
     };
   }, [steps, theme]);
 
+  // For typing mode: prepend a virtual empty step so the first transition types from scratch
+  const effectiveStepLayouts = useMemo(() => {
+    if (!stepLayouts || stepLayouts.length === 0) return stepLayouts;
+    if (animationType !== "typing") return stepLayouts;
+    return [createEmptyLayout(stepLayouts[0]!), ...stepLayouts];
+  }, [stepLayouts, animationType]);
+
   // Clear outdated download URL when settings change
   useEffect(() => {
     if (downloadUrl) {
       URL.revokeObjectURL(downloadUrl);
       setDownloadUrl(null);
     }
-  }, [steps, theme, fps, transitionMs, startHoldMs, betweenHoldMs, endHoldMs]); // Only those that affect the video content
+  }, [steps, theme, fps, transitionMs, startHoldMs, betweenHoldMs, endHoldMs, animationType, typingWpm, naturalFlow]); // Only those that affect the video content
 
   const renderAt = useCallback(
     (ms: number, overrideDimensions?: CanvasDimensions) => {
       const canvas = canvasRef.current;
-      if (!canvas || !stepLayouts || stepLayouts.length === 0) return;
+      if (!canvas || !effectiveStepLayouts || effectiveStepLayouts.length === 0) return;
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
-      // Use override dimensions (for export) or computed dimensions (for preview)
       const dims = overrideDimensions ?? canvasDimensions;
-
-      // Use 2x pixel ratio for sharp rendering on retina displays
       const PIXEL_RATIO = 2;
 
-      // Use preview config for preview rendering
       const cfg = makePreviewLayoutConfig();
       cfg.canvasWidth = dims.width;
       cfg.canvasHeight = dims.height;
 
-      // Set canvas internal size to 2x for retina sharpness
       const targetWidth = dims.width * PIXEL_RATIO;
       const targetHeight = dims.height * PIXEL_RATIO;
-
-      // Always set canvas size and CSS dimensions
       canvas.width = targetWidth;
       canvas.height = targetHeight;
       canvas.style.width = `${dims.width}px`;
       canvas.style.height = `${dims.height}px`;
-
-      // Reset transform and scale context for 2x rendering
       ctx.setTransform(PIXEL_RATIO, 0, 0, PIXEL_RATIO, 0, 0);
 
-      const clampMs = Math.max(0, Math.min(timeline.totalMs, ms));
-
-      const steps = stepLayouts.length;
-      if (steps === 1) {
-        const only = stepLayouts[0]!;
-        drawCodeFrame({
-          ctx,
-          config: cfg,
-          layout: only.layout,
-          theme: getThemeVariant(theme),
-          showLineNumbers: only.showLineNumbers,
-          startLine: only.startLine,
-          lineCount: only.tokenLineCount,
-          // Title is shown via HTML input overlay in preview
-        });
-        return;
-      }
-
-      let t = clampMs;
-      if (t < timeline.startHold) {
-        const first = stepLayouts[0]!;
-        drawCodeFrame({
-          ctx,
-          config: cfg,
-          layout: first.layout,
-          theme: getThemeVariant(theme),
-          showLineNumbers: first.showLineNumbers,
-          startLine: first.startLine,
-          lineCount: first.tokenLineCount,
-          // Title is shown via HTML input overlay in preview
-        });
-        return;
-      }
-      t -= timeline.startHold;
-
-      for (let i = 0; i < steps - 1; i++) {
-        const a = stepLayouts[i]!;
-        const b = stepLayouts[i + 1]!;
-
-        if (t <= transitionMs) {
-          const progress = transitionMs <= 0 ? 1 : t / transitionMs;
-          const animated = animateLayouts({ from: a.layout, to: b.layout, progress });
-          drawCodeFrame({
-            ctx,
-            config: cfg,
-            layout: b.layout,
-            theme: getThemeVariant(theme),
-            tokens: animated,
-            showLineNumbers: a.showLineNumbers || b.showLineNumbers,
-            startLine: b.startLine,
-            lineCount: Math.max(a.tokenLineCount, b.tokenLineCount),
-            prevLineCount: a.tokenLineCount,
-            targetLineCount: b.tokenLineCount,
-            transitionProgress: progress,
-            // Title is shown via HTML input overlay in preview
-          });
-          return;
-        }
-
-        t -= transitionMs;
-        if (t <= timeline.betweenHold) {
-          drawCodeFrame({
-            ctx,
-            config: cfg,
-            layout: b.layout,
-            theme: getThemeVariant(theme),
-            showLineNumbers: b.showLineNumbers,
-            startLine: b.startLine,
-            lineCount: b.tokenLineCount,
-            // Title is shown via HTML input overlay in preview
-          });
-          return;
-        }
-        t -= timeline.betweenHold;
-      }
-
-      const last = stepLayouts[steps - 1]!;
-      drawCodeFrame({
+      renderTimeline({
         ctx,
         config: cfg,
-        layout: last.layout,
-        theme: getThemeVariant(theme),
-        showLineNumbers: last.showLineNumbers,
-        startLine: last.startLine,
-        lineCount: last.tokenLineCount,
-        // Title is shown via HTML input overlay in preview
+        layouts: effectiveStepLayouts,
+        codes: effectiveStepCodes,
+        timeline,
+        ms,
+        themeVariant: getThemeVariant(theme),
+        charWidth: previewCharWidthRef.current,
+        isTyping: animationType === "typing",
+        transitionMs,
+        typingDurations: typingTransitionDurations,
+        naturalFlow,
       });
     },
-    [stepLayouts, theme, timeline, transitionMs, canvasDimensions],
+    [effectiveStepLayouts, effectiveStepCodes, animationType, theme, timeline, transitionMs, typingTransitionDurations, canvasDimensions, naturalFlow],
   );
 
   useEffect(() => {
-    if (!stepLayouts || stepLayouts.length === 0) return;
+    if (!effectiveStepLayouts || effectiveStepLayouts.length === 0) return;
     renderAt(playheadMs);
-  }, [playheadMs, renderAt, stepLayouts]);
+  }, [playheadMs, renderAt, effectiveStepLayouts]);
 
   useEffect(() => {
     if (!isPlaying) {
@@ -387,6 +493,19 @@ export default function Home() {
       return;
     };
   }, [isPlaying, timeline.totalMs]);
+
+  useTypingSound({
+    enabled: soundEnabled,
+    isPlaying,
+    playheadMs,
+    timeline,
+    effectiveStepCount,
+    transitionMs,
+    typingDurations: typingTransitionDurations,
+    animationType,
+    effectiveStepCodes,
+    naturalFlow,
+  });
 
   // Cleanup blob URLs on unmount to prevent memory leaks
   useEffect(() => {
@@ -517,100 +636,42 @@ export default function Home() {
     finalExportCfg.canvasWidth = exportWidth;
     finalExportCfg.canvasHeight = exportHeight;
 
-    // Local render function for export that uses export layouts
+    // For typing mode, prepend a virtual empty layout
+    const effectiveExportLayouts = animationType === "typing"
+      ? [createEmptyLayout(exportLayouts[0]!), ...exportLayouts]
+      : exportLayouts;
+
+    const exportStepCodes = animationType === "typing"
+      ? ["", ...steps.map((s) => s.code)]
+      : steps.map((s) => s.code);
+
+    const exportTypingDurations = animationType === "typing"
+      ? exportStepCodes.slice(0, -1).map((fromCode, i) => {
+          const toCode = exportStepCodes[i + 1];
+          const chars = computeChangedChars(fromCode, toCode);
+          return Math.max(500, (chars / 5 / typingWpm) * 60 * 1000);
+        })
+      : null;
+
     const renderExportFrame = (ms: number) => {
       const ctx = exportCanvas.getContext("2d");
       if (!ctx) return;
-
-      // Reset transform (preview uses 2x, export uses 1x)
       ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-      const clampMs = Math.max(0, Math.min(timeline.totalMs, ms));
-      const stepCount = exportLayouts.length;
-
-      if (stepCount === 1) {
-        const only = exportLayouts[0]!;
-        drawCodeFrame({
-          ctx,
-          config: finalExportCfg,
-          layout: only.layout,
-          theme: getThemeVariant(theme),
-          showLineNumbers: only.showLineNumbers,
-          startLine: only.startLine,
-          lineCount: only.tokenLineCount,
-          title: filename,
-        });
-        return;
-      }
-
-      let t = clampMs;
-      if (t < timeline.startHold) {
-        const first = exportLayouts[0]!;
-        drawCodeFrame({
-          ctx,
-          config: finalExportCfg,
-          layout: first.layout,
-          theme: getThemeVariant(theme),
-          showLineNumbers: first.showLineNumbers,
-          startLine: first.startLine,
-          lineCount: first.tokenLineCount,
-          title: filename,
-        });
-        return;
-      }
-      t -= timeline.startHold;
-
-      for (let i = 0; i < stepCount - 1; i++) {
-        const a = exportLayouts[i]!;
-        const b = exportLayouts[i + 1]!;
-
-        if (t <= transitionMs) {
-          const progress = transitionMs <= 0 ? 1 : t / transitionMs;
-          const animated = animateLayouts({ from: a.layout, to: b.layout, progress });
-          drawCodeFrame({
-            ctx,
-            config: finalExportCfg,
-            layout: b.layout,
-            theme: getThemeVariant(theme),
-            tokens: animated,
-            showLineNumbers: a.showLineNumbers || b.showLineNumbers,
-            startLine: b.startLine,
-            lineCount: Math.max(a.tokenLineCount, b.tokenLineCount),
-            prevLineCount: a.tokenLineCount,
-            targetLineCount: b.tokenLineCount,
-            transitionProgress: progress,
-            title: filename,
-          });
-          return;
-        }
-
-        t -= transitionMs;
-        if (t <= timeline.betweenHold) {
-          drawCodeFrame({
-            ctx,
-            config: finalExportCfg,
-            layout: b.layout,
-            theme: getThemeVariant(theme),
-            showLineNumbers: b.showLineNumbers,
-            startLine: b.startLine,
-            lineCount: b.tokenLineCount,
-            title: filename,
-          });
-          return;
-        }
-        t -= timeline.betweenHold;
-      }
-
-      const last = exportLayouts[stepCount - 1]!;
-      drawCodeFrame({
+      renderTimeline({
         ctx,
         config: finalExportCfg,
-        layout: last.layout,
-        theme: getThemeVariant(theme),
-        showLineNumbers: last.showLineNumbers,
-        startLine: last.startLine,
-        lineCount: last.tokenLineCount,
+        layouts: effectiveExportLayouts,
+        codes: exportStepCodes,
+        timeline,
+        ms,
+        themeVariant: getThemeVariant(theme),
+        charWidth,
+        isTyping: animationType === "typing",
+        transitionMs,
+        typingDurations: exportTypingDurations,
         title: filename,
+        naturalFlow,
       });
     };
 
@@ -640,12 +701,23 @@ export default function Home() {
         setExportPhase("saving");
         setExportProgress(0);
 
+        let audioBlob: Blob | undefined;
+        if (soundEnabled && animationType === "typing") {
+          audioBlob = await generateTypingAudioTrack({
+            timeline,
+            stepCount: effectiveStepCount,
+            transitionMs,
+            typingDurations: exportTypingDurations,
+          });
+        }
+
         const mp4Blob = await convertWebmToMp4(
           blob!,
           (val) => {
             setExportProgress(val);
           },
           durationMs,
+          audioBlob,
         );
         cancelled = true;
 
@@ -676,7 +748,11 @@ export default function Home() {
           selectedLang={selectedLang}
           onLangChange={setSelectedLang}
           theme={theme}
-          onThemeChange={(v) => setTheme(v as ShikiThemeChoice)}
+          onThemeChange={(v) => {
+            const newTheme = v as ShikiThemeChoice;
+            setCodeTheme(newTheme);
+            setSiteTheme(getThemeVariant(newTheme));
+          }}
           showLineNumbers={simpleShowLineNumbers}
           onShowLineNumbersChange={setSimpleShowLineNumbers}
           startLine={simpleStartLine}
@@ -723,6 +799,18 @@ export default function Home() {
           canExport={canExport}
           filename={filename}
           onFilenameChange={setFilename}
+          animationType={animationType}
+          onAnimationTypeChange={(type) => {
+            setAnimationType(type);
+            if (type === "token-flow" && transitionMs > 5000) setTransitionMs(700);
+          }}
+          typingWpm={typingWpm}
+          onTypingWpmChange={setTypingWpm}
+          naturalFlow={naturalFlow}
+          onNaturalFlowChange={setNaturalFlow}
+          themeVariant={getThemeVariant(theme)}
+          soundEnabled={soundEnabled}
+          onSoundToggle={() => setSoundEnabled((v) => !v)}
         />
       </ResizablePanelGroup>
     </div>

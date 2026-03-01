@@ -345,7 +345,7 @@ export default function Home() {
           charWidth,
           paddingX: previewCfg.paddingX,
           gutterWidth: maxGutterWidth, // Use max gutter width for consistent positioning
-          minWidth: 0, // No minimum for preview - shrink to fit
+          minWidth: 300,
         });
 
         const requiredHeight = calculateCanvasHeight({
@@ -647,10 +647,10 @@ export default function Home() {
 
     const exportTypingDurations = animationType === "typing"
       ? exportStepCodes.slice(0, -1).map((fromCode, i) => {
-          const toCode = exportStepCodes[i + 1];
-          const chars = computeChangedChars(fromCode, toCode);
-          return Math.max(500, (chars / 5 / typingWpm) * 60 * 1000);
-        })
+        const toCode = exportStepCodes[i + 1];
+        const chars = computeChangedChars(fromCode, toCode);
+        return Math.max(500, (chars / 5 / typingWpm) * 60 * 1000);
+      })
       : null;
 
     const renderExportFrame = (ms: number) => {

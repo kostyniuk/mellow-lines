@@ -12,6 +12,9 @@ type TypingMode = {
 };
 
 type TypingModeFiles = TypingMode[keyof TypingMode];
+
+export const TYPING_SOUND_FILE: TypingModeFiles = "/typing-mellow.mp3";
+
 /** Duration in ms to pause the sound when the cursor moves to a new line. */
 const LINE_PAUSE_MS = 600;
 
@@ -56,8 +59,7 @@ export function useTypingSound(opts: {
 
   // Create audio element once
   useEffect(() => {
-    const filename: TypingModeFiles = "/typing-mellow.mp3";
-    const audio = new Audio(filename);
+    const audio = new Audio(TYPING_SOUND_FILE);
     audio.loop = true;
     audio.volume = 0.5;
     audio.preload = "auto";

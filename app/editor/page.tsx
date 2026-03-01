@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useTheme } from "next-themes";
 import { nanoid } from "nanoid";
 
+import { useDefaultCodeTheme } from "../lib/useDefaultCodeTheme";
 import { animateLayouts } from "../lib/magicMove/animate";
 import { drawCodeFrame } from "../lib/magicMove/canvasRenderer";
 import { animateTyping, computeChangedChars } from "../lib/typing/animateTyping";
@@ -197,8 +197,7 @@ export default function Home() {
   const [simpleShowLineNumbers, setSimpleShowLineNumbers] = useState<boolean>(false);
   const [simpleStartLine, setSimpleStartLine] = useState<number>(1);
 
-  const [theme, setCodeTheme] = useState<ShikiThemeChoice>("vitesse-dark");
-  const { setTheme: setSiteTheme } = useTheme();
+  const { codeTheme: theme, setCodeTheme, setSiteTheme } = useDefaultCodeTheme();
   const [fps, setFps] = useState<number>(60);
   const [transitionMs, setTransitionMs] = useState<number>(700);
   const [startHoldMs, setStartHoldMs] = useState<number>(500);

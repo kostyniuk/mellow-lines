@@ -204,7 +204,7 @@ export default function Home() {
   const [startHoldMs, setStartHoldMs] = useState<number>(500);
   const [betweenHoldMs, setBetweenHoldMs] = useState<number>(200);
   const [endHoldMs, setEndHoldMs] = useState<number>(500);
-  const [filename, setFilename] = useState<string>("Untitled-1");
+  const [filename, setFilename] = useState<string>("");
   const [animationType, setAnimationType] = useState<AnimationType>("typing");
   const [typingWpm, setTypingWpm] = useState<number>(120);
   const [naturalFlow, setNaturalFlow] = useState<boolean>(true);

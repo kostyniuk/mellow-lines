@@ -35,7 +35,7 @@ function drawTitleBar(opts: {
 
   // Draw title centered in title bar
   if (title) {
-    const titleColor = theme === "dark" ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)";
+    const titleColor = theme === "dark" ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)";
     ctx.fillStyle = titleColor;
     ctx.font = `${Math.round(h * 0.35)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
     ctx.textBaseline = "middle";

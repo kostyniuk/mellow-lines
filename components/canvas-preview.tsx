@@ -75,8 +75,8 @@ export function CanvasPreview({
                 className={cn(
                   "bg-transparent text-center text-sm border-none outline-none focus:ring-0 focus:outline-none w-48 px-2 py-1 cursor-text",
                   themeVariant === "dark"
-                    ? "text-white/60 placeholder:text-white/25"
-                    : "text-black/60 placeholder:text-black/25"
+                    ? "text-white/80 placeholder:text-white/25"
+                    : "text-black/80 placeholder:text-black/25"
                 )}
                 placeholder="Untitled-1"
               />

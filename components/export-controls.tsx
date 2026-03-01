@@ -100,7 +100,7 @@ export function ExportControls({
 
         {downloadUrl && (
           <Button variant="outline" size="sm" asChild className="gap-2">
-            <a href={downloadUrl} download={`${filename || "Untitled-1"}.${format}`}>
+            <a href={downloadUrl} download={`${filename || "Mellow_Lines"}.${format}`}>
               <Film className="w-4 h-4" />
               Save Video
             </a>

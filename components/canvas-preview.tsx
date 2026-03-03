@@ -56,9 +56,12 @@ interface CanvasPreviewProps {
 
 const groupedBackgroundThemes = (() => {
   const themes = getAllBackgroundThemes();
+  const orgIds = themes.filter((t) => t.group === "org").map((t) => t.id);
+  const gradientIds = themes.filter((t) => t.group !== "org").map((t) => t.id);
   return [
     { label: "Default", items: ["none"] },
-    { label: "Gradient", items: themes.map((t) => t.id) },
+    { label: "Orgs", items: orgIds },
+    { label: "Gradient", items: gradientIds },
   ];
 })();
 

@@ -8,7 +8,7 @@
 
 export type GradientStop = { offset: number; color: string };
 
-export type GradientLayer = {
+export type LinearLayer = {
   /** Normalised coordinates (0-1) resolved against the full canvas size. */
   type: "linear";
   x0: number;
@@ -18,11 +18,28 @@ export type GradientLayer = {
   stops: GradientStop[];
 };
 
+export type RadialLayer = {
+  type: "radial";
+  /** Centre x (0-1, normalised against canvas width). */
+  cx: number;
+  /** Centre y (0-1, normalised against canvas height). */
+  cy: number;
+  /** Inner radius (0-1, normalised against Math.min(width, height)). */
+  r0: number;
+  /** Outer radius (0-1, normalised against Math.min(width, height)). */
+  r1: number;
+  stops: GradientStop[];
+};
+
+export type GradientLayer = LinearLayer | RadialLayer;
+
 export type BackgroundTheme = {
   id: string;
   name: string;
   /** Colour shown in the Combobox swatch (first dominant colour). */
   previewColor: string;
+  /** Optional grouping key for the combobox (e.g. "org"). Defaults to "gradient". */
+  group?: string;
   layers: GradientLayer[];
 };
 
@@ -574,6 +591,218 @@ const THEMES: BackgroundTheme[] = [
       },
     ],
   },
+  // ── Org themes ───────────────────────────────────────────────────
+  {
+    id: "openai-1",
+    name: "OpenAI - 1",
+    previewColor: "#e8b84c",
+    group: "org",
+    layers: [
+      // Base: warm gold to sky blue horizontal sweep
+      {
+        type: "linear",
+        x0: 0, y0: 0.5, x1: 1, y1: 0.5,
+        stops: [
+          { offset: 0, color: "#d9a030" },
+          { offset: 0.35, color: "#e8c86c" },
+          { offset: 0.5, color: "#f0c0d0" },
+          { offset: 0.75, color: "#a8c8e8" },
+          { offset: 1, color: "#8cb8e0" },
+        ],
+      },
+      // Yellow-gold radial blob top-left
+      {
+        type: "radial",
+        cx: 0.2, cy: 0.3, r0: 0, r1: 0.7,
+        stops: [
+          { offset: 0, color: "rgba(230, 170, 40, 0.55)" },
+          { offset: 0.5, color: "rgba(230, 180, 60, 0.2)" },
+          { offset: 1, color: "rgba(230, 180, 60, 0)" },
+        ],
+      },
+      // Pink radial blob in center-bottom
+      {
+        type: "radial",
+        cx: 0.45, cy: 0.65, r0: 0, r1: 0.6,
+        stops: [
+          { offset: 0, color: "rgba(245, 160, 190, 0.45)" },
+          { offset: 0.4, color: "rgba(240, 170, 200, 0.25)" },
+          { offset: 1, color: "rgba(240, 170, 200, 0)" },
+        ],
+      },
+      // Pink linear wash from bottom
+      {
+        type: "linear",
+        x0: 0.3, y0: 1, x1: 0.6, y1: 0.3,
+        stops: [
+          { offset: 0, color: "rgba(240, 150, 180, 0.3)" },
+          { offset: 0.5, color: "rgba(230, 170, 200, 0.15)" },
+          { offset: 1, color: "rgba(230, 170, 200, 0)" },
+        ],
+      },
+      // Light blue wash from right
+      {
+        type: "linear",
+        x0: 1, y0: 0, x1: 0.4, y1: 0.8,
+        stops: [
+          { offset: 0, color: "rgba(140, 190, 240, 0.35)" },
+          { offset: 1, color: "rgba(140, 190, 240, 0)" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "openai-2",
+    name: "OpenAI - 2",
+    previewColor: "#c4b8e8",
+    group: "org",
+    layers: [
+      // Base: light lavender/periwinkle
+      {
+        type: "linear",
+        x0: 0, y0: 0, x1: 1, y1: 1,
+        stops: [
+          { offset: 0, color: "#d0c8f0" },
+          { offset: 0.5, color: "#c8c0e8" },
+          { offset: 1, color: "#d8d0f0" },
+        ],
+      },
+      // Large orange-peach radial blob bottom-left
+      {
+        type: "radial",
+        cx: 0.2, cy: 0.75, r0: 0, r1: 0.9,
+        stops: [
+          { offset: 0, color: "rgba(255, 140, 50, 0.85)" },
+          { offset: 0.25, color: "rgba(252, 130, 60, 0.7)" },
+          { offset: 0.5, color: "rgba(248, 140, 90, 0.45)" },
+          { offset: 0.75, color: "rgba(240, 150, 130, 0.15)" },
+          { offset: 1, color: "rgba(240, 150, 130, 0)" },
+        ],
+      },
+      // Large orange-salmon radial blob bottom-right
+      {
+        type: "radial",
+        cx: 0.8, cy: 0.8, r0: 0, r1: 0.85,
+        stops: [
+          { offset: 0, color: "rgba(255, 150, 60, 0.8)" },
+          { offset: 0.3, color: "rgba(250, 140, 80, 0.6)" },
+          { offset: 0.6, color: "rgba(245, 140, 100, 0.25)" },
+          { offset: 1, color: "rgba(245, 140, 100, 0)" },
+        ],
+      },
+      // Warm peach wash across lower half
+      {
+        type: "radial",
+        cx: 0.5, cy: 0.7, r0: 0, r1: 0.8,
+        stops: [
+          { offset: 0, color: "rgba(250, 160, 120, 0.5)" },
+          { offset: 0.5, color: "rgba(245, 170, 150, 0.2)" },
+          { offset: 1, color: "rgba(245, 170, 160, 0)" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "openai-3",
+    name: "OpenAI - 3",
+    previewColor: "#3020c0",
+    group: "org",
+    layers: [
+      // Base: deep blue-indigo (shifted away from red-purple)
+      {
+        type: "linear",
+        x0: 0, y0: 0, x1: 1, y1: 1,
+        stops: [
+          { offset: 0, color: "#1a1090" },
+          { offset: 0.4, color: "#2218a8" },
+          { offset: 0.7, color: "#2a20b8" },
+          { offset: 1, color: "#1810a0" },
+        ],
+      },
+      // Large radial light source from top-left (bright near-white)
+      {
+        type: "radial",
+        cx: 0.15, cy: 0.1, r0: 0, r1: 1.0,
+        stops: [
+          { offset: 0, color: "rgba(220, 230, 255, 0.7)" },
+          { offset: 0.2, color: "rgba(200, 215, 255, 0.5)" },
+          { offset: 0.45, color: "rgba(160, 180, 255, 0.25)" },
+          { offset: 0.7, color: "rgba(120, 140, 240, 0.08)" },
+          { offset: 1, color: "rgba(120, 140, 240, 0)" },
+        ],
+      },
+      // Strong diagonal light sweep from top-left to center
+      {
+        type: "linear",
+        x0: 0, y0: 0, x1: 0.65, y1: 0.6,
+        stops: [
+          { offset: 0, color: "rgba(210, 220, 255, 0.6)" },
+          { offset: 0.3, color: "rgba(180, 200, 255, 0.4)" },
+          { offset: 0.6, color: "rgba(140, 160, 250, 0.15)" },
+          { offset: 1, color: "rgba(140, 160, 250, 0)" },
+        ],
+      },
+      // Secondary light ray — slightly offset for width
+      {
+        type: "linear",
+        x0: 0.05, y0: 0, x1: 0.75, y1: 0.55,
+        stops: [
+          { offset: 0, color: "rgba(200, 215, 255, 0.45)" },
+          { offset: 0.35, color: "rgba(170, 190, 255, 0.25)" },
+          { offset: 0.7, color: "rgba(130, 150, 240, 0.08)" },
+          { offset: 1, color: "rgba(130, 150, 240, 0)" },
+        ],
+      },
+      // Dark bottom-right for contrast
+      {
+        type: "linear",
+        x0: 1, y0: 1, x1: 0.3, y1: 0.3,
+        stops: [
+          { offset: 0, color: "rgba(10, 5, 60, 0.5)" },
+          { offset: 0.5, color: "rgba(15, 10, 70, 0.2)" },
+          { offset: 1, color: "rgba(15, 10, 70, 0)" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "openai-4",
+    name: "OpenAI - 4",
+    previewColor: "#e89030",
+    group: "org",
+    layers: [
+      // Base: warm amber to orange diagonal
+      {
+        type: "linear",
+        x0: 0, y0: 0, x1: 1, y1: 1,
+        stops: [
+          { offset: 0, color: "#d88828" },
+          { offset: 0.3, color: "#e09030" },
+          { offset: 0.6, color: "#d88040" },
+          { offset: 1, color: "#c87838" },
+        ],
+      },
+      // Golden highlight from top-left
+      {
+        type: "linear",
+        x0: 0, y0: 0, x1: 0.7, y1: 0.8,
+        stops: [
+          { offset: 0, color: "rgba(240, 180, 80, 0.35)" },
+          { offset: 0.5, color: "rgba(230, 160, 60, 0.15)" },
+          { offset: 1, color: "rgba(230, 160, 60, 0)" },
+        ],
+      },
+      // Subtle warm-light patch from right
+      {
+        type: "linear",
+        x0: 1, y0: 0.3, x1: 0.3, y1: 0.7,
+        stops: [
+          { offset: 0, color: "rgba(250, 200, 120, 0.25)" },
+          { offset: 1, color: "rgba(250, 200, 120, 0)" },
+        ],
+      },
+    ],
+  },
 ];
 
 // ---------- lookup ----------
@@ -615,12 +844,25 @@ export function drawBackgroundGradient(opts: {
   }
 
   for (const layer of theme.layers) {
-    const grad = ctx.createLinearGradient(
-      layer.x0 * width,
-      layer.y0 * height,
-      layer.x1 * width,
-      layer.y1 * height,
-    );
+    let grad: CanvasGradient;
+    if (layer.type === "linear") {
+      grad = ctx.createLinearGradient(
+        layer.x0 * width,
+        layer.y0 * height,
+        layer.x1 * width,
+        layer.y1 * height,
+      );
+    } else {
+      const ref = Math.min(width, height);
+      grad = ctx.createRadialGradient(
+        layer.cx * width,
+        layer.cy * height,
+        layer.r0 * ref,
+        layer.cx * width,
+        layer.cy * height,
+        layer.r1 * ref,
+      );
+    }
     for (const stop of layer.stops) {
       grad.addColorStop(stop.offset, stop.color);
     }

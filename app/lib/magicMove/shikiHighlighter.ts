@@ -27,7 +27,45 @@ export type ShikiThemeChoice =
   | "night-owl"
   | "one-light"
   | "synthwave-84"
-  | "ayu-dark";
+  | "ayu-dark"
+  | "andromeeda"
+  | "aurora-x"
+  | "catppuccin-frappe"
+  | "catppuccin-macchiato"
+  | "dark-plus"
+  | "dracula-soft"
+  | "everforest-dark"
+  | "everforest-light"
+  | "github-dark-default"
+  | "github-dark-dimmed"
+  | "github-dark-high-contrast"
+  | "github-light-default"
+  | "github-light-high-contrast"
+  | "gruvbox-dark-hard"
+  | "gruvbox-dark-medium"
+  | "gruvbox-dark-soft"
+  | "gruvbox-light-hard"
+  | "gruvbox-light-medium"
+  | "gruvbox-light-soft"
+  | "houston"
+  | "kanagawa-wave"
+  | "laserwave"
+  | "light-plus"
+  | "material-theme"
+  | "material-theme-darker"
+  | "material-theme-lighter"
+  | "material-theme-ocean"
+  | "material-theme-palenight"
+  | "min-dark"
+  | "min-light"
+  | "plastic"
+  | "poimandres"
+  | "red"
+  | "rose-pine-moon"
+  | "slack-dark"
+  | "slack-ochin"
+  | "snazzy-light"
+  | "vitesse-black";
 
 export const AVAILABLE_THEMES: readonly ShikiThemeChoice[] = [
   "github-light",
@@ -52,6 +90,44 @@ export const AVAILABLE_THEMES: readonly ShikiThemeChoice[] = [
   "one-light",
   "synthwave-84",
   "ayu-dark",
+  "andromeeda",
+  "aurora-x",
+  "catppuccin-frappe",
+  "catppuccin-macchiato",
+  "dark-plus",
+  "dracula-soft",
+  "everforest-dark",
+  "everforest-light",
+  "github-dark-default",
+  "github-dark-dimmed",
+  "github-dark-high-contrast",
+  "github-light-default",
+  "github-light-high-contrast",
+  "gruvbox-dark-hard",
+  "gruvbox-dark-medium",
+  "gruvbox-dark-soft",
+  "gruvbox-light-hard",
+  "gruvbox-light-medium",
+  "gruvbox-light-soft",
+  "houston",
+  "kanagawa-wave",
+  "laserwave",
+  "light-plus",
+  "material-theme",
+  "material-theme-darker",
+  "material-theme-lighter",
+  "material-theme-ocean",
+  "material-theme-palenight",
+  "min-dark",
+  "min-light",
+  "plastic",
+  "poimandres",
+  "red",
+  "rose-pine-moon",
+  "slack-dark",
+  "slack-ochin",
+  "snazzy-light",
+  "vitesse-black",
 ] as const;
 
 export function getGroupedThemes() {
@@ -121,6 +197,17 @@ export function getThemeVariant(theme: ShikiThemeChoice): "light" | "dark" {
     "solarized-light",
     "rose-pine-dawn",
     "one-light",
+    "everforest-light",
+    "github-light-default",
+    "github-light-high-contrast",
+    "gruvbox-light-hard",
+    "gruvbox-light-medium",
+    "gruvbox-light-soft",
+    "light-plus",
+    "material-theme-lighter",
+    "min-light",
+    "slack-ochin",
+    "snazzy-light",
   ];
   return lightThemes.includes(theme) ? "light" : "dark";
 }
@@ -148,6 +235,44 @@ const THEME_BG_COLORS: Record<ShikiThemeChoice, string> = {
   "one-light": "#fafafa",
   "synthwave-84": "#262335",
   "ayu-dark": "#0b0e14",
+  "andromeeda": "#23262E",
+  "aurora-x": "#07090F",
+  "catppuccin-frappe": "#303446",
+  "catppuccin-macchiato": "#24273a",
+  "dark-plus": "#1E1E1E",
+  "dracula-soft": "#282A36",
+  "everforest-dark": "#2d353b",
+  "everforest-light": "#fdf6e3",
+  "github-dark-default": "#0d1117",
+  "github-dark-dimmed": "#22272e",
+  "github-dark-high-contrast": "#0a0c10",
+  "github-light-default": "#ffffff",
+  "github-light-high-contrast": "#ffffff",
+  "gruvbox-dark-hard": "#1d2021",
+  "gruvbox-dark-medium": "#282828",
+  "gruvbox-dark-soft": "#32302f",
+  "gruvbox-light-hard": "#f9f5d7",
+  "gruvbox-light-medium": "#fbf1c7",
+  "gruvbox-light-soft": "#f2e5bc",
+  "houston": "#17191e",
+  "kanagawa-wave": "#1F1F28",
+  "laserwave": "#27212e",
+  "light-plus": "#FFFFFF",
+  "material-theme": "#263238",
+  "material-theme-darker": "#212121",
+  "material-theme-lighter": "#FAFAFA",
+  "material-theme-ocean": "#0F111A",
+  "material-theme-palenight": "#292D3E",
+  "min-dark": "#1f1f1f",
+  "min-light": "#ffffff",
+  "plastic": "#21252B",
+  "poimandres": "#1b1e28",
+  "red": "#390000",
+  "rose-pine-moon": "#232136",
+  "slack-dark": "#222222",
+  "slack-ochin": "#ffffff",
+  "snazzy-light": "#FAFBFC",
+  "vitesse-black": "#000000",
 };
 
 /**
@@ -192,6 +317,44 @@ async function getHighlighterOnce() {
           "one-light",
           "synthwave-84",
           "ayu-dark",
+          "andromeeda",
+          "aurora-x",
+          "catppuccin-frappe",
+          "catppuccin-macchiato",
+          "dark-plus",
+          "dracula-soft",
+          "everforest-dark",
+          "everforest-light",
+          "github-dark-default",
+          "github-dark-dimmed",
+          "github-dark-high-contrast",
+          "github-light-default",
+          "github-light-high-contrast",
+          "gruvbox-dark-hard",
+          "gruvbox-dark-medium",
+          "gruvbox-dark-soft",
+          "gruvbox-light-hard",
+          "gruvbox-light-medium",
+          "gruvbox-light-soft",
+          "houston",
+          "kanagawa-wave",
+          "laserwave",
+          "light-plus",
+          "material-theme",
+          "material-theme-darker",
+          "material-theme-lighter",
+          "material-theme-ocean",
+          "material-theme-palenight",
+          "min-dark",
+          "min-light",
+          "plastic",
+          "poimandres",
+          "red",
+          "rose-pine-moon",
+          "slack-dark",
+          "slack-ochin",
+          "snazzy-light",
+          "vitesse-black",
         ],
         langs: [...AVAILABLE_LANGUAGES],
       });

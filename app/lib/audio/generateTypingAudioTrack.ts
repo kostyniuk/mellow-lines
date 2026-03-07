@@ -1,4 +1,5 @@
 import type { TimelineInfo } from "../magicMove/types";
+import { TYPING_SOUND_FILE } from "./useTypingSound";
 
 const SAMPLE_RATE = 44100;
 const VOLUME = 0.5;
@@ -77,7 +78,7 @@ export async function generateTypingAudioTrack(opts: {
   }
 
   // Decode the typing sound MP3
-  const response = await fetch("/typing_mellow.mp3");
+  const response = await fetch(TYPING_SOUND_FILE);
   const arrayBuffer = await response.arrayBuffer();
 
   // Use a temporary online AudioContext to decode (OfflineAudioContext.decodeAudioData

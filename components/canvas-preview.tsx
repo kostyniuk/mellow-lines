@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -17,6 +18,7 @@ import {
   ComboboxLabel,
   ComboboxList,
   ComboboxSeparator,
+  ComboboxTrigger,
 } from "@/components/ui/combobox";
 import type { AnimationType } from "@/app/lib/magicMove/types";
 import type { RenderTheme } from "@/app/lib/magicMove/codeLayout";
@@ -26,7 +28,7 @@ import {
 } from "@/app/lib/magicMove/backgroundThemes";
 import { cn } from "@/lib/utils";
 
-const PADDING_PRESETS = [16, 32, 48, 64, 128] as const;
+const PADDING_PRESETS = [48, 64, 128] as const;
 
 interface CanvasPreviewProps {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
@@ -39,12 +41,17 @@ interface CanvasPreviewProps {
   onAnimationTypeChange: (value: AnimationType) => void;
   naturalFlow: boolean;
   onNaturalFlowChange: (value: boolean) => void;
+  typingWpm: number;
+  onTypingWpmChange: (value: number) => void;
+  transitionMs: number;
+  onTransitionMsChange: (value: number) => void;
   themeVariant: RenderTheme;
   backgroundPadding: number;
   backgroundThemeId: string;
   onBackgroundThemeIdChange: (id: string) => void;
   backgroundPaddingPx: number;
   onBackgroundPaddingPxChange: (value: number) => void;
+  children?: React.ReactNode;
 }
 
 const groupedBackgroundThemes = (() => {
@@ -71,13 +78,19 @@ export function CanvasPreview({
   onAnimationTypeChange,
   naturalFlow,
   onNaturalFlowChange,
+  typingWpm,
+  onTypingWpmChange,
+  transitionMs,
+  onTransitionMsChange,
   themeVariant,
   backgroundPadding,
   backgroundThemeId,
   onBackgroundThemeIdChange,
   backgroundPaddingPx,
   onBackgroundPaddingPxChange,
+  children,
 }: CanvasPreviewProps) {
+  const activeBackgroundTheme = getBackgroundThemeById(backgroundThemeId);
   const hasShownRef = useRef(false);
   const shouldAnimate = !isLoading && !hasShownRef.current;
 
@@ -101,7 +114,7 @@ export function CanvasPreview({
         </div>
       )}
 
-      <div className="flex-1 overflow-auto relative flex items-center justify-center p-8 bg-[url('/grid-pattern.svg')] dark:bg-[url('/grid-pattern-dark.svg')] bg-center">
+      <div className="flex-1 overflow-auto relative flex items-center justify-center p-8 pb-24 bg-[url('/grid-pattern.svg')] dark:bg-[url('/grid-pattern-dark.svg')] bg-center">
         {!isLoading && (
           <div
             className={cn(
@@ -125,18 +138,18 @@ export function CanvasPreview({
                 className={cn(
                   "bg-transparent text-center text-sm border-none outline-none focus:ring-0 focus:outline-none w-48 px-2 py-1 cursor-text",
                   themeVariant === "dark"
-                    ? "text-white/60 placeholder:text-white/25"
-                    : "text-black/60 placeholder:text-black/25"
+                    ? "text-white/80 placeholder:text-white/25"
+                    : "text-black/80 placeholder:text-black/25"
                 )}
-                placeholder="Untitled-1"
+                placeholder="Title ✨"
               />
             </div>
           </div>
         )}
 
-        {/* Floating animation mode pill */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 rounded-full bg-background/60 backdrop-blur-xl shadow-lg ring-1 ring-black/[0.08] dark:ring-white/[0.08] px-1.5 py-1.5">
-          <span className="text-xs text-muted-foreground pl-2 whitespace-nowrap">Animation:</span>
+        {/* Floating settings pill */}
+        <div className="absolute bottom-25 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 rounded-2xl bg-background/60 backdrop-blur-xl shadow-lg ring-1 ring-black/[0.08] dark:ring-white/[0.08] px-3 py-1.5">
+          <span className="text-sm text-foreground/70 pl-1 whitespace-nowrap">Animation:</span>
           <Tabs
             value={animationType}
             onValueChange={(v) => onAnimationTypeChange(v as AnimationType)}
@@ -151,8 +164,8 @@ export function CanvasPreview({
           {animationType === "typing" && (
             <>
               <div className="w-px h-4 bg-border/50" />
-              <div className="flex items-center gap-1.5 pr-1">
-                <Label htmlFor="natural-flow-pill" className="text-xs whitespace-nowrap text-muted-foreground">
+              <div className="flex items-center gap-1.5">
+                <Label htmlFor="natural-flow-pill" className="text-sm whitespace-nowrap text-foreground/70">
                   Natural flow
                 </Label>
                 <Switch
@@ -166,18 +179,64 @@ export function CanvasPreview({
 
           <div className="w-px h-4 bg-border/50" />
 
-          <span className="text-xs text-muted-foreground pl-1 whitespace-nowrap">Background:</span>
+          {animationType === "typing" ? (
+            <div className="flex items-center gap-1.5">
+              <Label className="text-sm whitespace-nowrap text-foreground/70">
+                Speed: {typingWpm} WPM
+              </Label>
+              <Slider
+                value={[typingWpm]}
+                min={30}
+                max={600}
+                step={10}
+                onValueChange={([v]) => onTypingWpmChange(v)}
+                className="w-28"
+              />
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5">
+              <Label className="text-sm whitespace-nowrap text-foreground/70">
+                Transition: {(transitionMs / 1000).toFixed(1)}s
+              </Label>
+              <Slider
+                value={[transitionMs]}
+                min={100}
+                max={5000}
+                step={100}
+                onValueChange={([v]) => onTransitionMsChange(v)}
+                className="w-28"
+              />
+            </div>
+          )}
+
+          <div className="w-px h-4 bg-border/50" />
+
+          <span className="text-sm text-foreground/70 whitespace-nowrap">Background:</span>
           <Combobox
             items={groupedBackgroundThemes}
             value={backgroundThemeId}
             onValueChange={(v) => v && onBackgroundThemeIdChange(v as string)}
             itemToStringLabel={(value) => backgroundThemeLabel(value as string)}
           >
-            <ComboboxInput
-              placeholder="Background..."
-              className="h-7 w-[120px] text-xs"
-            />
-            <ComboboxContent>
+            <ComboboxTrigger
+              className="flex items-center justify-center w-8 h-8 rounded-md hover:bg-accent/50 transition-colors cursor-pointer border-0 bg-transparent p-1.5"
+            >
+              <span
+                className={cn(
+                  "inline-block w-4 h-4 rounded-full shrink-0 ring-1",
+                  activeBackgroundTheme
+                    ? "ring-black/10"
+                    : "ring-foreground/20 bg-transparent border border-dashed border-foreground/30",
+                )}
+                style={activeBackgroundTheme ? { backgroundColor: activeBackgroundTheme.previewColor } : undefined}
+              />
+            </ComboboxTrigger>
+            <ComboboxContent className="min-w-48">
+              <ComboboxInput
+                placeholder="Search themes..."
+                className="h-7 text-sm"
+                showTrigger={false}
+              />
               <ComboboxEmpty>No themes found</ComboboxEmpty>
               <ComboboxList>
                 {(group, index) => (
@@ -213,7 +272,7 @@ export function CanvasPreview({
           {backgroundThemeId !== "none" && (
             <>
               <div className="w-px h-4 bg-border/50" />
-              <span className="text-xs text-muted-foreground pl-1 whitespace-nowrap">Padding:</span>
+              <span className="text-sm text-foreground/70 whitespace-nowrap">Padding:</span>
               <Tabs
                 value={String(backgroundPaddingPx)}
                 onValueChange={(v) => onBackgroundPaddingPxChange(Number(v))}
@@ -230,6 +289,8 @@ export function CanvasPreview({
             </>
           )}
         </div>
+
+        {children}
       </div>
     </div>
   );

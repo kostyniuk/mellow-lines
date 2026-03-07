@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useTheme } from "next-themes";
 import { nanoid } from "nanoid";
 
+import { useDefaultCodeTheme } from "../lib/useDefaultCodeTheme";
 import { animateLayouts } from "../lib/magicMove/animate";
 import { drawCodeFrame } from "../lib/magicMove/canvasRenderer";
 import { animateTyping, computeChangedChars } from "../lib/typing/animateTyping";
@@ -205,14 +205,13 @@ export default function Home() {
   const [simpleShowLineNumbers, setSimpleShowLineNumbers] = useState<boolean>(false);
   const [simpleStartLine, setSimpleStartLine] = useState<number>(1);
 
-  const [theme, setCodeTheme] = useState<ShikiThemeChoice>("vitesse-dark");
-  const { setTheme: setSiteTheme } = useTheme();
+  const { codeTheme: theme, setCodeTheme, setSiteTheme } = useDefaultCodeTheme();
   const [fps, setFps] = useState<number>(60);
   const [transitionMs, setTransitionMs] = useState<number>(700);
   const [startHoldMs, setStartHoldMs] = useState<number>(500);
   const [betweenHoldMs, setBetweenHoldMs] = useState<number>(200);
   const [endHoldMs, setEndHoldMs] = useState<number>(500);
-  const [filename, setFilename] = useState<string>("Untitled-1");
+  const [filename, setFilename] = useState<string>("");
   const [animationType, setAnimationType] = useState<AnimationType>("typing");
   const [typingWpm, setTypingWpm] = useState<number>(120);
   const [naturalFlow, setNaturalFlow] = useState<boolean>(true);
@@ -362,7 +361,7 @@ export default function Home() {
           charWidth,
           paddingX: previewCfg.paddingX,
           gutterWidth: maxGutterWidth, // Use max gutter width for consistent positioning
-          minWidth: 0, // No minimum for preview - shrink to fit
+          minWidth: 300,
         });
 
         const requiredHeight = calculateCanvasHeight({
@@ -682,10 +681,10 @@ export default function Home() {
 
     const exportTypingDurations = animationType === "typing"
       ? exportStepCodes.slice(0, -1).map((fromCode, i) => {
-          const toCode = exportStepCodes[i + 1];
-          const chars = computeChangedChars(fromCode, toCode);
-          return Math.max(500, (chars / 5 / typingWpm) * 60 * 1000);
-        })
+        const toCode = exportStepCodes[i + 1];
+        const chars = computeChangedChars(fromCode, toCode);
+        return Math.max(500, (chars / 5 / typingWpm) * 60 * 1000);
+      })
       : null;
 
     const renderExportFrame = (ms: number) => {
@@ -824,7 +823,6 @@ export default function Home() {
             setPlayheadMs(0);
           }}
           stepLayouts={stepLayouts}
-          stepCount={steps.length}
           transitionMs={transitionMs}
           onTransitionMsChange={setTransitionMs}
           downloadUrl={downloadUrl}

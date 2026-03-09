@@ -1,6 +1,6 @@
 "use client";
 
-import { Layers, Plus, Settings2 } from "lucide-react";
+import { Layers, Plus, Settings2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -48,6 +48,7 @@ interface StepsEditorHeaderProps {
   endHoldMs: number;
   onEndHoldMsChange: (value: number) => void;
   onAddStep: () => void;
+  onClearSteps: () => void;
 }
 
 function formatName(name: string) {
@@ -79,18 +80,20 @@ export function StepsEditorHeader({
   endHoldMs,
   onEndHoldMsChange,
   onAddStep,
+  onClearSteps,
 }: StepsEditorHeaderProps) {
   return (
-    <div className="flex-none flex items-center justify-between px-4 py-1.5 border-b bg-background/50 backdrop-blur-sm sticky top-0 z-10 gap-2">
-      <div className="flex items-center gap-2">
-        <Layers className="w-4 h-4 text-muted-foreground" />
-        <FieldLabel className="">Steps</FieldLabel>
-        <Badge variant="secondary" className="font-mono mt-0.5">
-          {stepCount}
-        </Badge>
-      </div>
+    <div className="flex-none border-b bg-background/50 backdrop-blur-sm sticky top-0 z-10">
+      <div className="flex flex-col gap-2 px-3 py-2 sm:px-4 sm:py-1.5">
+        <div className="flex items-center gap-2">
+          <Layers className="w-4 h-4 text-muted-foreground" />
+          <FieldLabel>Steps</FieldLabel>
+          <Badge variant="secondary" className="font-mono mt-0.5">
+            {stepCount}
+          </Badge>
+        </div>
 
-      <div className="flex items-center gap-2 flex-1 justify-end">
+        <div className="flex flex-wrap items-center gap-2 sm:justify-end">
         <Combobox
           items={AVAILABLE_LANGUAGES}
           value={selectedLang}
@@ -99,7 +102,7 @@ export function StepsEditorHeader({
         >
           <ComboboxInput
             placeholder="Select a language..."
-            className="h-8 w-[140px] text-xs"
+            className="h-8 w-[min(100%,12rem)] text-xs sm:w-[140px]"
           />
           <ComboboxContent>
             <ComboboxEmpty>No languages found</ComboboxEmpty>
@@ -121,7 +124,7 @@ export function StepsEditorHeader({
         >
           <ComboboxInput
             placeholder="Select theme..."
-            className="h-8 w-fit text-xs"
+            className="h-8 w-[min(100%,13rem)] text-xs sm:w-[180px]"
           />
           <ComboboxContent>
             <ComboboxEmpty>No themes found</ComboboxEmpty>
@@ -143,7 +146,16 @@ export function StepsEditorHeader({
           </ComboboxContent>
         </Combobox>
 
-        <Separator orientation="vertical" />
+        <Separator orientation="vertical" className="hidden sm:block" />
+
+        <Button
+          onClick={onClearSteps}
+          size="sm"
+          variant="outline"
+          className="h-7 gap-1 text-muted-foreground"
+        >
+          <Trash2 className="w-3.5 h-3.5" /> Clear
+        </Button>
 
         <Popover>
           <PopoverTrigger asChild>
@@ -177,6 +189,7 @@ export function StepsEditorHeader({
         >
           <Plus className="w-3.5 h-3.5" /> New Step
         </Button>
+        </div>
       </div>
     </div>
   );

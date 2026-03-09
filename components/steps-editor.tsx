@@ -30,10 +30,13 @@ interface StepsEditorProps {
   endHoldMs: number;
   onEndHoldMsChange: (value: number) => void;
   onAddStep: () => void;
+  onClearSteps: () => void;
   onInsertStep: (atIndex: number) => void;
   onRemoveStep: (index: number) => void;
   onUpdateStep: (index: number, code: string) => void;
   scrollToEndTrigger?: number;
+  defaultSize?: number;
+  minSize?: number;
 }
 
 export function StepsEditor({
@@ -55,10 +58,13 @@ export function StepsEditor({
   endHoldMs,
   onEndHoldMsChange,
   onAddStep,
+  onClearSteps,
   onInsertStep,
   onRemoveStep,
   onUpdateStep,
   scrollToEndTrigger,
+  defaultSize = 60,
+  minSize = 35,
 }: StepsEditorProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -77,9 +83,9 @@ export function StepsEditor({
 
   return (
     <ResizablePanel
-      defaultSize={60}
-      minSize={35}
-      className="flex flex-col h-full bg-muted/10 overflow-hidden"
+      defaultSize={defaultSize}
+      minSize={minSize}
+      className="flex flex-col h-full min-h-0 bg-muted/10 overflow-hidden"
     >
       <StepsEditorHeader
         stepCount={steps.length}
@@ -100,10 +106,11 @@ export function StepsEditor({
         endHoldMs={endHoldMs}
         onEndHoldMsChange={onEndHoldMsChange}
         onAddStep={onAddStep}
+        onClearSteps={onClearSteps}
       />
 
       <ScrollArea ref={scrollRef} className="flex-1 w-full min-h-0">
-        <div className="py-2 px-4 space-y-4 max-w-4xl mx-auto w-full pb-4">
+        <div className="py-2 px-3 sm:px-4 space-y-4 max-w-4xl mx-auto w-full pb-4">
           {steps.map((step, index) => (
             <Fragment key={step.id}>
               <StepInsertDivider onInsert={() => onInsertStep(index)} />

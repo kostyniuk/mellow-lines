@@ -135,7 +135,7 @@ export function CanvasPreview({
         </div>
       )}
 
-      <div className="flex-1 overflow-auto relative flex items-center justify-center p-8 pb-24 bg-[url('/grid-pattern.svg')] dark:bg-[url('/grid-pattern-dark.svg')] bg-center">
+      <div className="flex-1 overflow-auto relative flex items-center justify-center p-4 pb-40 sm:p-8 sm:pb-24 bg-[url('/grid-pattern.svg')] dark:bg-[url('/grid-pattern-dark.svg')] bg-center">
         {!isLoading && (
           <div
             className={cn(
@@ -168,9 +168,9 @@ export function CanvasPreview({
           </div>
         )}
 
-        <div className="absolute bottom-25 left-1/2 -translate-x-1/2 z-10 flex w-[min(calc(100%-2rem),56rem)] flex-col items-center gap-2">
+        <div className="absolute bottom-[6.75rem] left-1/2 -translate-x-1/2 z-10 flex w-[min(calc(100%-1.5rem),56rem)] flex-col items-center gap-2 sm:bottom-25 sm:w-[min(calc(100%-2rem),56rem)]">
           {/* Floating settings pill */}
-          <div className="flex max-w-full flex-wrap items-center justify-center gap-2 rounded-2xl bg-background/60 px-3 py-1.5 shadow-lg ring-1 ring-black/[0.08] backdrop-blur-xl dark:ring-white/[0.08]">
+          <div className="flex max-w-full flex-wrap items-center justify-center gap-2 rounded-2xl bg-background/60 px-2.5 py-2 sm:px-3 sm:py-1.5 shadow-lg ring-1 ring-black/[0.08] backdrop-blur-xl dark:ring-white/[0.08]">
             <span className="pl-1 text-sm whitespace-nowrap text-foreground/70">Animation:</span>
             <Tabs
               value={animationType}
@@ -185,7 +185,7 @@ export function CanvasPreview({
 
             {animationType === "typing" && (
               <>
-                <div className="h-4 w-px bg-border/50" />
+                <div className="hidden h-4 w-px bg-border/50 sm:block" />
                 <div className="flex items-center gap-1.5">
                   <Label htmlFor="natural-flow-pill" className="text-sm whitespace-nowrap text-foreground/70">
                     Natural flow
@@ -199,7 +199,7 @@ export function CanvasPreview({
               </>
             )}
 
-            <div className="h-4 w-px bg-border/50" />
+            <div className="hidden h-4 w-px bg-border/50 sm:block" />
 
             {animationType === "typing" ? (
               <div className="flex items-center gap-1.5">
@@ -231,7 +231,7 @@ export function CanvasPreview({
               </div>
             )}
 
-            <div className="h-4 w-px bg-border/50" />
+            <div className="hidden h-4 w-px bg-border/50 sm:block" />
 
             <span className="text-sm whitespace-nowrap text-foreground/70">Background:</span>
             <Combobox
@@ -293,7 +293,7 @@ export function CanvasPreview({
 
             {backgroundThemeId !== "none" && (
               <>
-                <div className="h-4 w-px bg-border/50" />
+                <div className="hidden h-4 w-px bg-border/50 sm:block" />
                 <div className="flex items-center gap-1.5 whitespace-nowrap">
                   <span className="text-sm text-foreground/70">Padding:</span>
                   <Tabs
@@ -315,8 +315,8 @@ export function CanvasPreview({
           </div>
 
           {animationType === "token-flow" && (
-            <div className="w-fit max-w-full rounded-2xl border border-black/[0.06] bg-background/72 px-3 py-1.5 shadow-lg ring-1 ring-white/30 backdrop-blur-xl dark:border-white/[0.08] dark:ring-white/[0.06]">
-              <div className="flex flex-col gap-1.5 sm:flex-row sm:flex-nowrap sm:items-center sm:gap-5">
+            <div className="w-full max-w-full rounded-2xl border border-black/[0.06] bg-background/72 px-3 py-1.5 shadow-lg ring-1 ring-white/30 backdrop-blur-xl dark:border-white/[0.08] dark:ring-white/[0.06] sm:w-auto">
+              <div className="flex min-w-0 flex-col gap-1.5 sm:flex-row sm:flex-nowrap sm:items-center sm:gap-5">
                 <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
                   <span className="text-sm whitespace-nowrap text-foreground/70">
                     Profile:
@@ -363,7 +363,7 @@ export function CanvasPreview({
 
                 <div className="hidden h-4 w-px shrink-0 bg-border/50 sm:block" />
 
-                <p className="text-sm leading-6 text-foreground/70 sm:min-w-0 sm:whitespace-nowrap">
+                <p className="min-w-0 text-sm leading-6 text-foreground/70 sm:flex-1">
                   <span className="font-semibold text-red-500" aria-hidden="true">
                     *
                   </span>{" "}

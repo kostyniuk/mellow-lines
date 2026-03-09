@@ -103,69 +103,69 @@ export function PlayerControls({
   }, [isPlaying, playheadMs, totalMs]);
 
   return (
-    <div className="absolute bottom-2 left-4 right-4 z-10 rounded-2xl bg-background/60 backdrop-blur-xl shadow-lg ring-1 ring-black/[0.08] dark:ring-white/[0.08] p-3 flex items-center gap-4">
-      <Button
-        size="icon"
-        className="h-10 w-10 shrink-0 rounded-full"
-        onClick={onPlayPause}
-        disabled={disabled}
-      >
-        {isPlaying ? (
-          <Pause className="w-5 h-5 fill-current" />
-        ) : (
-          <Play className="w-5 h-5 fill-current ml-0.5" />
-        )}
-      </Button>
-
-      <div className="flex-1 flex flex-col gap-1.5">
-        <div className="flex items-center justify-between text-xs font-medium text-muted-foreground">
-          <span className="font-mono">{Math.round(displayPlayheadMs)}ms</span>
-          <span className="font-mono">{Math.round(totalMs)}ms</span>
-        </div>
-        <Slider
-          value={[displayPlayheadMs]}
-          max={Math.max(1, totalMs)}
-          step={1}
-          onValueChange={([value]) => {
-            displayPlayheadRef.current = value;
-            setDisplayPlayheadMs(value);
-            onSeek(value);
-          }}
+    <div className="absolute bottom-3 left-3 right-3 z-10 rounded-2xl bg-background/60 p-3 shadow-lg ring-1 ring-black/[0.08] backdrop-blur-xl dark:ring-white/[0.08] sm:bottom-2 sm:left-4 sm:right-4">
+      <div className="flex items-center gap-3 sm:gap-4">
+        <Button
+          size="icon"
+          className="h-10 w-10 shrink-0 rounded-full"
+          onClick={onPlayPause}
           disabled={disabled}
-          className="py-1"
-          noThumb
-        />
-      </div>
-
-      <div className="flex items-center gap-2 pl-1">
-        <div className="w-px h-4 bg-border/50" />
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 text-muted-foreground"
-          onClick={onReset}
-          title="Reset"
         >
-          <RotateCcw className="w-4 h-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 text-muted-foreground"
-          onClick={onSoundToggle}
-          title={soundEnabled ? "Mute typing sound" : "Unmute typing sound"}
-        >
-          {soundEnabled ? (
-            <Volume2 className="w-4 h-4" />
+          {isPlaying ? (
+            <Pause className="w-5 h-5 fill-current" />
           ) : (
-            <VolumeX className="w-4 h-4" />
+            <Play className="w-5 h-5 fill-current ml-0.5" />
           )}
         </Button>
+
+        <div className="flex-1 flex flex-col gap-1.5 min-w-0">
+          <div className="flex items-center justify-between text-xs font-medium text-muted-foreground">
+            <span className="font-mono">{Math.round(displayPlayheadMs)}ms</span>
+            <span className="font-mono">{Math.round(totalMs)}ms</span>
+          </div>
+          <Slider
+            value={[displayPlayheadMs]}
+            max={Math.max(1, totalMs)}
+            step={1}
+            onValueChange={([value]) => {
+              displayPlayheadRef.current = value;
+              setDisplayPlayheadMs(value);
+              onSeek(value);
+            }}
+            disabled={disabled}
+            className="py-1"
+            noThumb
+          />
+        </div>
       </div>
 
-      <div className="flex flex-col items-end gap-1 pl-1">
+      <div className="mt-3 flex flex-col gap-3 sm:mt-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-px h-4 bg-border/50" />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground"
+            onClick={onReset}
+            title="Reset"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground"
+            onClick={onSoundToggle}
+            title={soundEnabled ? "Mute typing sound" : "Unmute typing sound"}
+          >
+            {soundEnabled ? (
+              <Volume2 className="w-4 h-4" />
+            ) : (
+              <VolumeX className="w-4 h-4" />
+            )}
+          </Button>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 sm:justify-end">
           <Tabs
             value={format}
             onValueChange={(v) => setFormat(v as ExportFormat)}

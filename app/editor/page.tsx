@@ -59,6 +59,7 @@ type CanvasDimensions = {
 };
 
 const CURSOR_BLINK_MS = 530;
+const MOBILE_BREAKPOINT_QUERY = "(max-width: 767px)";
 
 function createEmptyLayout(reference: StepLayout): StepLayout {
   return {
@@ -251,6 +252,7 @@ function renderTimeline(opts: {
 
 export default function Home() {
   const [simpleSteps, setSimpleSteps] = useState<SimpleStep[]>(DEFAULT_STEPS);
+  const [isMobileLayout, setIsMobileLayout] = useState(false);
   const [selectedLang, setSelectedLang] = useState<string>("typescript");
   const [simpleShowLineNumbers, setSimpleShowLineNumbers] = useState<boolean>(false);
   const [simpleStartLine, setSimpleStartLine] = useState<number>(1);
@@ -317,6 +319,20 @@ export default function Home() {
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [downloadFormat, setDownloadFormat] = useState<ExportFormat | null>(null);
   const [scrollToEndTrigger, setScrollToEndTrigger] = useState(0);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(MOBILE_BREAKPOINT_QUERY);
+    const updateLayout = (event?: MediaQueryListEvent) => {
+      setIsMobileLayout(event ? event.matches : mediaQuery.matches);
+    };
+
+    updateLayout();
+    mediaQuery.addEventListener("change", updateLayout);
+
+    return () => {
+      mediaQuery.removeEventListener("change", updateLayout);
+    };
+  }, []);
 
   // For typing mode, we prepend a virtual empty step so the first transition types from scratch
   const effectiveStepCount = animationType === "typing" ? steps.length + 1 : steps.length;
@@ -742,6 +758,15 @@ export default function Home() {
     setSimpleSteps(updated);
   };
 
+  const clearSimpleSteps = () => {
+    setIsPlaying(false);
+    previewPlayheadRef.current = 0;
+    setPlayheadMs(0);
+    lastUiSyncRef.current = null;
+    lastFrameRef.current = null;
+    setSimpleSteps([{ id: nanoid(), code: "" }]);
+  };
+
   const onExport = async (format: ExportFormat) => {
     if (!stepLayouts || stepLayouts.length === 0) return;
 
@@ -971,7 +996,10 @@ export default function Home() {
 
   return (
     <div className="h-full flex flex-col bg-background text-foreground overflow-hidden">
-      <ResizablePanelGroup direction="horizontal" className="flex-1 w-full max-w-full">
+      <ResizablePanelGroup
+        direction={isMobileLayout ? "vertical" : "horizontal"}
+        className="flex-1 w-full max-w-full min-h-0"
+      >
         <StepsEditor
           steps={simpleSteps}
           selectedLang={selectedLang}
@@ -995,10 +1023,13 @@ export default function Home() {
           endHoldMs={endHoldMs}
           onEndHoldMsChange={setEndHoldMs}
           onAddStep={() => insertSimpleStep()}
+          onClearSteps={clearSimpleSteps}
           onInsertStep={(index) => insertSimpleStep(index)}
           onRemoveStep={removeSimpleStep}
           onUpdateStep={updateSimpleStep}
           scrollToEndTrigger={scrollToEndTrigger}
+          defaultSize={isMobileLayout ? 48 : 60}
+          minSize={isMobileLayout ? 30 : 35}
         />
 
         <ResizableHandle />
@@ -1044,6 +1075,8 @@ export default function Home() {
           onBackgroundThemeIdChange={setBackgroundThemeId}
           backgroundPaddingPx={backgroundPaddingPx}
           onBackgroundPaddingPxChange={setBackgroundPaddingPx}
+          defaultSize={isMobileLayout ? 52 : 40}
+          minSize={isMobileLayout ? 32 : 30}
         />
       </ResizablePanelGroup>
     </div>

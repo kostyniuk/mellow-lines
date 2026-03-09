@@ -45,6 +45,8 @@ interface PreviewPanelProps {
   onBackgroundThemeIdChange: (id: string) => void;
   backgroundPaddingPx: number;
   onBackgroundPaddingPxChange: (value: number) => void;
+  defaultSize?: number;
+  minSize?: number;
 }
 
 export function PreviewPanel({
@@ -85,12 +87,14 @@ export function PreviewPanel({
   onBackgroundThemeIdChange,
   backgroundPaddingPx,
   onBackgroundPaddingPxChange,
+  defaultSize = 40,
+  minSize = 30,
 }: PreviewPanelProps) {
   return (
     <ResizablePanel
-      defaultSize={100}
-      minSize={50}
-      className="flex flex-col h-full bg-zinc-950/5 dark:bg-black"
+      defaultSize={defaultSize}
+      minSize={minSize}
+      className="flex flex-col h-full min-h-0 bg-zinc-950/5 dark:bg-black"
     >
       <CanvasPreview
         canvasRef={canvasRef}
